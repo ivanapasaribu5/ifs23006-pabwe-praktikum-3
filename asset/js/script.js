@@ -4,6 +4,7 @@ const todoInput = document.getElementById("todo-input");
 const todoList = document.getElementById("todoList");
 const searchInput = document.getElementById("search-input");
 const filterButtons = document.getElementById("filter-buttons");
+const themeToggle = document.getElementById("theme-toggle");
 
 // === State Management ===
 let todos = [];
@@ -14,10 +15,35 @@ let draggedItem = null;
 // === Functions ===
 
 /**
+ * Mengatur tema (terang/gelap) berdasarkan preferensi yang tersimpan.
+ */
+function applyTheme() {
+  const savedTheme = localStorage.getItem("theme") || "light";
+  document.documentElement.setAttribute("data-bs-theme", savedTheme);
+  if (themeToggle) {
+    themeToggle.innerHTML =
+      savedTheme === "dark"
+        ? '<i class="bi bi-sun-fill"></i>'
+        : '<i class="bi bi-moon-stars-fill"></i>';
+  }
+}
+
+/**
+ * Mengganti tema antara terang dan gelap.
+ */
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute("data-bs-theme");
+  const newTheme = currentTheme === "dark" ? "light" : "dark";
+  localStorage.setItem("theme", newTheme);
+  applyTheme();
+}
+
+/**
  * Memuat todos dari localStorage saat halaman dimuat.
  */
 function loadTodos() {
   const storedTodos = localStorage.getItem("todos");
+  applyTheme(); // Terapkan tema saat load
   if (storedTodos) {
     todos = JSON.parse(storedTodos);
   }
@@ -53,7 +79,13 @@ function renderTodos() {
 
   // 3. Render setiap todo yang sudah difilter
   if (filteredTodos.length === 0) {
-    todoList.innerHTML = `<li class="list-group-item text-center text-muted">Tidak ada todo yang ditemukan.</li>`;
+    const emptyMessage = `
+      <li class="list-group-item text-center text-muted border-0 bg-transparent fade-in">
+        <img src="https://cdn.svgporn.com/logos/google-keep.svg" alt="Empty" width="80" class="mb-3">
+        <p class="mb-0"><b>Daftar Kosong</b></p>
+        <p class="small">Sepertinya semua sudah selesai. Saatnya menambahkan tugas baru!</p>
+      </li>`;
+    todoList.innerHTML = emptyMessage;
   } else {
     filteredTodos.forEach((item, index) => {
       const li = createTodoElement(item);
@@ -69,7 +101,9 @@ function renderTodos() {
  */
 function createTodoElement(item) {
   const li = document.createElement("li");
-  li.className = "list-group-item d-flex align-items-center";
+  li.className = `list-group-item d-flex align-items-center ${
+    item.completed ? "todo-completed" : ""
+  }`;
   li.draggable = true;
   li.dataset.id = item.id; // Gunakan ID unik untuk identifikasi
 
@@ -77,7 +111,7 @@ function createTodoElement(item) {
   const textDecoration = isCompleted ? "line-through" : "none";
 
   li.innerHTML = `
-    <div class="flex-fill" style="text-decoration: ${textDecoration};">
+    <div class="flex-fill">
       <input class="form-check-input me-2" type="checkbox" ${
         isCompleted ? "checked" : ""
       }>
@@ -123,7 +157,7 @@ function createTodoElement(item) {
  */
 function addTodo(event) {
   event.preventDefault();
-  const todoText = todoInput.value.trim();
+  const todoText = todoInput.value.trim(); // todoInput is already defined globally
 
   if (todoText === "") {
     alert("Todo tidak boleh kosong!");
@@ -154,6 +188,11 @@ function addTodo(event) {
  * Menghapus todo berdasarkan ID.
  */
 function deleteTodo(id) {
+  const todoElement = todoList.querySelector(`[data-id="${id}"]`);
+  if (todoElement) {
+    todoElement.classList.add("fade-out");
+  }
+
   if (confirm("Apakah Anda yakin ingin menghapus todo ini?")) {
     todos = todos.filter((item) => item.id !== id);
     saveAndRender();
@@ -259,7 +298,13 @@ function handleSearch(event) {
  */
 function saveAndRender() {
   saveTodos();
-  renderTodos();
+  // Beri sedikit jeda agar animasi fade-out bisa berjalan sebelum render ulang
+  const isDeleting = document.querySelector(".fade-out");
+  if (isDeleting) {
+    setTimeout(renderTodos, 400);
+  } else {
+    renderTodos();
+  }
 }
 
 // === Drag and Drop Handlers ===
@@ -327,3 +372,4 @@ document.addEventListener("DOMContentLoaded", loadTodos);
 form.addEventListener("submit", addTodo);
 filterButtons.addEventListener("click", handleFilter);
 searchInput.addEventListener("input", handleSearch);
+themeToggle.addEventListener("click", toggleTheme);

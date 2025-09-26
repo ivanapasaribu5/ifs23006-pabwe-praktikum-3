@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -15,21 +15,134 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
     />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
+      :root,
+      [data-bs-theme="light"] {
+        --body-bg: linear-gradient(to bottom, #e3f2fd, #ffffff);
+        --card-bg: rgba(255, 255, 255, 0.75);
+        --card-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+        --text-color: #212529;
+        --muted-text-color: #6c757d;
+        --todo-item-bg: #ffffff;
+        --todo-item-border: #dee2e6;
+        --todo-item-hover-bg: #f8f9fa;
+        --todo-completed-bg: #d1e7dd;
+        --todo-completed-color: #6c757d;
+        --form-control-focus-shadow: rgba(13, 110, 253, 0.25);
+      }
+
+      [data-bs-theme="dark"] {
+        --body-bg: linear-gradient(to bottom, #0d1b2a, #1b263b);
+        --card-bg: rgba(27, 38, 59, 0.75);
+        --card-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.3);
+        --text-color: #e0e1dd;
+        --muted-text-color: #adb5bd;
+        --todo-item-bg: #415a77;
+        --todo-item-border: #778da9;
+        --todo-item-hover-bg: #5a7492;
+        --todo-completed-bg: #2b4f3e;
+        --todo-completed-color: #a3cfbb;
+        --form-control-focus-shadow: rgba(110, 168, 254, 0.25);
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background: var(--body-bg);
+        color: var(--text-color);
+        transition: background 0.4s ease, color 0.4s ease;
+      }
+      .card {
+        backdrop-filter: blur(10px);
+        background-color: var(--card-bg);
+        transition: all 0.3s ease;
+        border: none;
+      }
+      .card:hover {
+        box-shadow: var(--card-shadow) !important;
+      }
       .list-group-item.dragging {
         opacity: 0.5;
         background-color: #e9ecef;
       }
+      .list-group-item {
+        background-color: var(--todo-item-bg);
+        transition: background-color 0.2s ease-in-out, opacity 0.4s ease,
+          transform 0.4s ease;
+        border-radius: 0.5rem !important; /* Rounded corners for items */
+        margin-bottom: 8px; /* Add space between items */
+        border: 1px solid var(--todo-item-border);
+      }
+      .list-group-item:hover {
+        background-color: var(--todo-item-hover-bg);
+      }
+      .list-group-item:last-child {
+        margin-bottom: 0;
+      }
+      .form-control:focus {
+        box-shadow: 0 0 0 0.25rem var(--form-control-focus-shadow);
+      }
+      .todo-completed {
+        background-color: var(--todo-completed-bg);
+        text-decoration: line-through;
+        color: var(--todo-completed-color);
+      }
+      .todo-completed .form-check-label {
+        text-decoration: line-through;
+      }
+      .nav-pills .btn-primary.active {
+        box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
+      }
+      /* Animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .fade-in {
+        animation: fadeIn 0.4s ease-out forwards;
+      }
+
+      .fade-out {
+        opacity: 0;
+        transform: scale(0.9);
+        transition: opacity 0.4s ease, transform 0.4s ease;
+      }
+      .theme-toggle {
+        cursor: pointer;
+        font-size: 1.25rem;
+        color: white;
+      }
+      .form-check-input {
+        cursor: pointer;
+      }
     </style>
   </head>
-  <body class="d-flex flex-column min-vh-100 bg-light">
+  <body class="d-flex flex-column min-vh-100">
     <header>
-      <nav class="navbar navbar-dark bg-primary shadow-sm">
-        <div class="container">
+      <nav
+        class="navbar navbar-expand navbar-dark bg-primary shadow-sm border-bottom"
+      >
+        <div class="container d-flex justify-content-between">
           <a class="navbar-brand" href="#">
             <i class="bi bi-card-checklist"></i>
-            Aplikasi Todo List
+            <b>Aplikasi Todo List</b>
           </a>
+          <span id="theme-toggle" class="theme-toggle">
+            <i class="bi bi-moon-stars-fill"></i>
+            <!-- Icon will be changed by JS -->
+          </span>
         </div>
       </nav>
     </header>
@@ -44,6 +157,7 @@
                 <input
                   type="text"
                   class="form-control"
+                  id="todo-input"
                   name="todo"
                   placeholder="Contoh: Belajar JavaScript"
                 />
@@ -64,24 +178,28 @@
                 placeholder="Cari todo..."
               />
             </div>
-            <div class="btn-group" role="group" id="filter-buttons">
+            <div
+              class="btn-group nav nav-pills"
+              role="group"
+              id="filter-buttons"
+            >
               <button
                 type="button"
-                class="btn btn-outline-primary active"
+                class="btn btn-primary active"
                 data-filter="all"
               >
                 Semua
               </button>
               <button
                 type="button"
-                class="btn btn-outline-primary"
+                class="btn btn-primary"
                 data-filter="uncompleted"
               >
                 Belum Selesai
               </button>
               <button
                 type="button"
-                class="btn btn-outline-primary"
+                class="btn btn-primary"
                 data-filter="completed"
               >
                 Selesai
@@ -96,283 +214,15 @@
       </div>
     </main>
 
-    <footer class="mt-auto py-3 bg-white shadow-sm">
+    <footer class="mt-auto py-3 bg-transparent">
       <div class="container text-center">
-        <span class="text-muted"
+        <span style="color: var(--muted-text-color)"
           >Copyright &copy; 2024 &middot; Dibuat dengan ❤️</span
         >
       </div>
     </footer>
 
-    <script>
-      let todos = [];
-      let currentFilter = "all"; // 'all', 'completed', 'uncompleted'
-      let searchTerm = "";
-      let editingTodoId = null; // Menyimpan ID dari todo yang sedang diedit
-      let draggedItem = null;
-
-      function renderTodos() {
-        const todoList = document.getElementById("todoList");
-        todoList.innerHTML = "";
-        // 1. Filter berdasarkan status
-        let filteredTodos = todos.filter((item) => {
-          if (currentFilter === "completed") {
-            return item.completed;
-          }
-          if (currentFilter === "uncompleted") {
-            return !item.completed;
-          }
-          return true; // 'all'
-        });
-
-        // 2. Filter berdasarkan pencarian
-        if (searchTerm) {
-          filteredTodos = filteredTodos.filter((item) =>
-            item.todo.toLowerCase().includes(searchTerm)
-          );
-        }
-
-        // 3. Render hasil filter
-        if (filteredTodos.length === 0) {
-          todoList.innerHTML = `<li class="list-group-item text-center text-muted">Tidak ada todo yang ditemukan.</li>`;
-        } else {
-          filteredTodos.forEach((item) => {
-            const li = document.createElement("li");
-            li.className = "list-group-item d-flex align-items-center";
-            li.draggable = true;
-            li.dataset.id = item.id;
-
-            const isEditing = item.id === editingTodoId;
-
-            const contentDiv = document.createElement("div");
-            contentDiv.className = "flex-fill";
-
-            if (isEditing) {
-              const input = document.createElement("input");
-              input.type = "text";
-              input.className = "form-control form-control-sm";
-              input.value = item.todo;
-              contentDiv.appendChild(input);
-
-              // Fokus ke input field saat mode edit
-              setTimeout(() => input.focus(), 0);
-            } else {
-              const checkbox = document.createElement("input");
-              checkbox.type = "checkbox";
-              checkbox.className = "form-check-input me-2";
-              checkbox.checked = item.completed;
-              checkbox.addEventListener("change", () => {
-                item.completed = checkbox.checked;
-                saveAndRender();
-              });
-
-              const label = document.createElement("label");
-              label.className = "form-check-label";
-              label.style.textDecoration = item.completed
-                ? "line-through"
-                : "none";
-              label.textContent = item.todo;
-
-              contentDiv.appendChild(checkbox);
-              contentDiv.appendChild(label);
-            }
-
-            const buttonsDiv = document.createElement("div");
-
-            if (isEditing) {
-              const saveButton = document.createElement("button");
-              saveButton.className = "btn btn-sm btn-success";
-              saveButton.innerHTML = '<i class="bi bi-check-lg"></i>';
-              saveButton.addEventListener("click", () => {
-                const newTodoText = contentDiv
-                  .querySelector("input")
-                  .value.trim();
-                updateTodoText(item.id, newTodoText);
-              });
-              buttonsDiv.appendChild(saveButton);
-            } else {
-              const editButton = document.createElement("button");
-              editButton.className = "btn btn-sm btn-outline-primary me-1";
-              editButton.innerHTML = '<i class="bi bi-pencil"></i>';
-              editButton.addEventListener("click", () => {
-                editingTodoId = item.id;
-                renderTodos();
-              });
-
-              const deleteButton = document.createElement("button");
-              deleteButton.className = "btn btn-sm btn-outline-danger";
-              deleteButton.innerHTML = '<i class="bi bi-trash"></i>';
-              deleteButton.addEventListener("click", () => {
-                if (confirm("Apakah Anda yakin ingin menghapus todo ini?")) {
-                  todos = todos.filter((t) => t.id !== item.id);
-                  saveAndRender();
-                }
-              });
-
-              buttonsDiv.appendChild(editButton);
-              buttonsDiv.appendChild(deleteButton);
-            }
-
-            li.appendChild(contentDiv);
-            li.appendChild(buttonsDiv);
-            todoList.appendChild(li);
-
-            // Event Listeners untuk Drag and Drop
-            li.addEventListener("dragstart", handleDragStart);
-            li.addEventListener("dragover", handleDragOver);
-            li.addEventListener("dragleave", handleDragLeave);
-            li.addEventListener("dragend", handleDragEnd);
-          });
-        }
-      }
-
-      function saveTodos() {
-        localStorage.setItem("todos", JSON.stringify(todos));
-      }
-
-      function saveAndRender() {
-        saveTodos();
-        renderTodos();
-      }
-
-      function updateTodoText(id, newText) {
-        if (newText === "") {
-          alert("Todo tidak boleh kosong!");
-          return;
-        }
-        // Cek duplikat, kecuali untuk item itu sendiri
-        const isDuplicate = todos.some(
-          (item) =>
-            item.id !== id && item.todo.toLowerCase() === newText.toLowerCase()
-        );
-        if (isDuplicate) {
-          alert("Todo dengan judul yang sama sudah ada!");
-          return;
-        }
-        const todoToUpdate = todos.find((item) => item.id === id);
-        todoToUpdate.todo = newText;
-        editingTodoId = null; // Keluar dari mode edit
-        saveAndRender();
-      }
-
-      // --- Drag and Drop Handlers ---
-      function handleDragStart(e) {
-        draggedItem = this;
-        // Menambahkan sedikit delay agar browser sempat merekam elemen yang di-drag
-        setTimeout(() => {
-          this.classList.add("dragging");
-        }, 0);
-      }
-
-      function handleDragEnd() {
-        this.classList.remove("dragging");
-        draggedItem = null;
-
-        // Update urutan array 'todos' berdasarkan urutan DOM yang baru
-        const newOrderIds = [...document.querySelectorAll("#todoList li")].map(
-          (li) => Number(li.dataset.id)
-        );
-
-        todos.sort(
-          (a, b) => newOrderIds.indexOf(a.id) - newOrderIds.indexOf(b.id)
-        );
-
-        saveTodos(); // Simpan urutan baru tanpa merender ulang
-      }
-
-      function handleDragOver(e) {
-        e.preventDefault();
-        const afterElement = getDragAfterElement(this.parentElement, e.clientY);
-        if (afterElement == null) {
-          this.parentElement.appendChild(draggedItem);
-        } else {
-          this.parentElement.insertBefore(draggedItem, afterElement);
-        }
-      }
-
-      function handleDragLeave() {
-        // Tidak perlu aksi khusus
-      }
-
-      function getDragAfterElement(container, y) {
-        const draggableElements = [
-          ...container.querySelectorAll("li:not(.dragging)"),
-        ];
-
-        return draggableElements.reduce(
-          (closest, child) => {
-            const box = child.getBoundingClientRect();
-            const offset = y - box.top - box.height / 2;
-            if (offset < 0 && offset > closest.offset) {
-              return { offset: offset, element: child };
-            } else {
-              return closest;
-            }
-          },
-          { offset: Number.NEGATIVE_INFINITY }
-        ).element;
-      }
-
-      document.addEventListener("DOMContentLoaded", function () {
-        const form = document.getElementById("formData");
-        const searchInput = document.getElementById("search-input");
-        const filterButtons = document.getElementById("filter-buttons");
-        const storedTodos = localStorage.getItem("todos");
-
-        if (storedTodos) {
-          todos = JSON.parse(storedTodos);
-        }
-
-        form.addEventListener("submit", function (event) {
-          event.preventDefault();
-          const todoInput = form.todo.value.trim();
-
-          if (todoInput === "") {
-            alert("Todo tidak boleh kosong!");
-            return;
-          }
-
-          // Validasi judul duplikat (case-insensitive)
-          const isDuplicate = todos.some(
-            (item) => item.todo.toLowerCase() === todoInput.toLowerCase()
-          );
-          if (isDuplicate) {
-            alert("Todo dengan judul yang sama sudah ada!");
-            return;
-          }
-
-          todos.unshift({
-            id: Date.now(), // ID unik berdasarkan timestamp
-            todo: todoInput,
-            completed: false,
-          });
-
-          form.todo.value = "";
-          saveAndRender();
-        });
-
-        searchInput.addEventListener("input", function (event) {
-          searchTerm = event.target.value.toLowerCase();
-          renderTodos();
-        });
-
-        filterButtons.addEventListener("click", function (event) {
-          if (event.target.tagName === "BUTTON") {
-            // Hapus kelas 'active' dari semua tombol
-            filterButtons
-              .querySelectorAll("button")
-              .forEach((btn) => btn.classList.remove("active"));
-            // Tambah kelas 'active' ke tombol yang diklik
-            event.target.classList.add("active");
-
-            currentFilter = event.target.dataset.filter;
-            renderTodos();
-          }
-        });
-
-        renderTodos();
-      });
-    </script>
+    } else {
+    <script src="asset/js/script.js"></script>
   </body>
 </html>
-
