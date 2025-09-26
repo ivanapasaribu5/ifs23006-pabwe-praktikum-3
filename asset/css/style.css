@@ -1,0 +1,8 @@
+/* Custom style untuk item yang sedang di-drag */
+.dragging {
+  opacity: 0.5;
+  background: #cce5ff;
+}
+.todo-item-label {
+  cursor: pointer;
+}
