@@ -181,6 +181,9 @@ function addTodo(event) {
 
   todos.unshift(newTodo); // Tambah ke awal array
   form.reset();
+  // Hapus placeholder setelah todo pertama ditambahkan
+  todoInput.placeholder = "Tulis todo baru di sini...";
+
   saveAndRender();
 }
 
