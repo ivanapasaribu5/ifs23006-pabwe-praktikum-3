@@ -481,6 +481,8 @@
           // Inisialisasi SortableJS untuk drag and drop urutan tugas
           new Sortable(this.taskList, {
             animation: 150,
+            delay: 300, // Waktu tunda dalam milidetik sebelum drag dimulai
+            delayOnTouchOnly: true, // Hanya aktifkan tunda pada perangkat sentuh
             handle: ".drag-handle", // 🌟 HANYA elemen ini yang bisa memulai drag
             onEnd: () => this.saveNewOrder(),
           });
