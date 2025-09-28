@@ -10,7 +10,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <style>
-  /* THEME COLORS */
+  /* 🌈 THEME COLORS */
   :root {
     --bg-gradient: linear-gradient(160deg, #eef2ff, #fdfdfd);
     --bg-dark: linear-gradient(160deg, #0f172a, #1e293b);
@@ -115,6 +115,14 @@
     opacity: 0.9;
     background: var(--accent);
   }
+  /* Gaya untuk tugas yang sudah selesai */
+  .task-item.completed {
+    transition: all 0.3s ease; /* Transisi untuk toggleCompleted UX */
+  }
+  .task-item.completed .task-title {
+    text-decoration: line-through;
+    opacity: 0.7;
+  }
   .task-title {
     font-weight: 600;
     font-size: 1rem;
@@ -178,7 +186,7 @@
   <div class="app-card p-3 mb-4">
     <div class="row g-2">
       <div class="col-md-8">
-        <input type="text" id="todoInput" class="form-control todo-input" placeholder="Tulis tugas baru... (max 150)">
+        <input type="text" id="todoInput" class="form-control todo-input" placeholder="Tulis tugas baru...">
       </div>
       <div class="col-md-4">
         <input type="date" id="deadlineInput" class="form-control deadline-input">
@@ -401,14 +409,14 @@ class TodoApp {
       <li class="task-item d-flex justify-content-between align-items-center ${completedClass}" data-id="${task.id}">
         <div class="d-flex flex-column flex-grow-1">
           <div class="d-flex align-items-center">
-            <input type="checkbox" class="form-check-input me-2" ${checked} data-task-id="${task.id}" data-action="toggle">
-            <span class="task-title flex-grow-1" style="${task.completed ? 'text-decoration: line-through; opacity: 0.7;' : ''}">${task.text}</span>
+            <input type="checkbox" class="form-check-input me-2" ${checked} data-action="toggle">
+            <span class="task-title flex-grow-1">${task.text}</span>
           </div>
           <span class="badge-deadline ${badge.class}">${badge.text}</span>
         </div>
         <div class="task-actions d-flex">
-          <button class="btn btn-sm icon-btn" data-task-id="${task.id}" data-action="edit" title="Edit Tugas"><i class="bi bi-pencil"></i></button>
-          <button class="btn btn-sm icon-btn" data-task-id="${task.id}" data-action="delete" title="Hapus Tugas"><i class="bi bi-trash"></i></button>
+          <button class="btn btn-sm icon-btn" data-action="edit" title="Edit Tugas"><i class="bi bi-pencil"></i></button>
+          <button class="btn btn-sm icon-btn" data-action="delete" title="Hapus Tugas"><i class="bi bi-trash"></i></button>
         </div>
       </li>
     `;
@@ -417,7 +425,7 @@ class TodoApp {
     
     // Menambahkan event listener setelah elemen ditambahkan
     const li = this.taskList.lastElementChild;
-    li.querySelector('[data-action="toggle"]').addEventListener('change', () => this.toggleCompleted(task.id));
+    li.querySelector('[data-action="toggle"]').addEventListener('change', (e) => this.toggleCompleted(task.id, e.target));
     li.querySelector('[data-action="edit"]').addEventListener('click', () => this.openEditModal(task.id));
     li.querySelector('[data-action="delete"]').addEventListener('click', () => this.deleteTask(task.id));
   }
@@ -460,22 +468,49 @@ class TodoApp {
     task.text = newText;
     task.deadline = newDeadline;
     this.save();
-    this.render();
+    this.render(); 
     this.editModal.hide();
     this.showNotif('Tugas berhasil diperbarui 📝', 'success');
   }
 
   /**
-   * Mengubah status selesai/belum selesai dari sebuah tugas.
+   * Mengubah status selesai/belum selesai dari sebuah tugas DAN memperbarui DOM secara langsung.
+   * Ini mencegah flicker dan scroll reset.
    * @param {number} id - ID tugas yang statusnya akan diubah.
+   * @param {HTMLInputElement} checkboxElement - Elemen checkbox yang memicu perubahan.
    */
-  toggleCompleted(id) {
+  toggleCompleted(id, checkboxElement) {
     const task = this.tasks.find(t => t.id === id);
     if (task) {
       task.completed = !task.completed;
       this.save();
-      // Render ulang untuk memastikan filter dan styling diperbarui
-      this.render();
+      
+      const listItem = checkboxElement.closest('.task-item');
+      
+      // Update DOM secara langsung (UX Fix)
+      if (task.completed) {
+        listItem.classList.add('completed');
+      } else {
+        listItem.classList.remove('completed');
+      }
+
+      this.updateStats(); 
+
+      // Jika filter aktif selain 'all', hapus elemen secara halus
+      if (this.currentFilter !== 'all' && listItem) {
+          // Tambahkan sedikit delay agar user bisa melihat perubahan status sebelum elemen hilang
+          setTimeout(() => {
+              listItem.style.opacity = '0';
+              listItem.style.transform = 'translateX(-100%)';
+              setTimeout(() => {
+                  listItem.remove();
+                  this.updateStats(); 
+                  this.showNotif('Tugas telah berpindah filter.', 'info');
+              }, 300); 
+          }, 100);
+      } else {
+          this.showNotif(`Tugas ditandai sebagai ${task.completed ? 'Selesai' : 'Belum Selesai'} ✔️`, 'success');
+      }
     }
   }
 
@@ -515,7 +550,7 @@ class TodoApp {
     // Update tampilan tombol filter
     this.filterBtns.forEach(b => b.classList.remove('active'));
     document.querySelector(`.filter-btn[data-filter="${f}"]`).classList.add('active');
-    this.render();
+    this.render(); // Re-render diperlukan saat filter diubah
   }
 
   /**
@@ -527,7 +562,6 @@ class TodoApp {
     const isDark = html.getAttribute('data-bs-theme') === 'dark';
     html.setAttribute('data-bs-theme', isDark ? 'light' : 'dark');
     this.themeToggle.innerHTML = isDark ? '<i class="bi bi-moon-fill"></i>' : '<i class="bi bi-sun-fill"></i>';
-    // Catatan: Menyimpan preferensi tema ke localStorage bisa ditambahkan di sini.
   }
 
   /**
@@ -539,7 +573,6 @@ class TodoApp {
 
   /**
    * Menyimpan urutan baru tugas setelah drag and drop (SortableJS).
-   * Memastikan data di `this.tasks` cocok dengan urutan DOM.
    */
   saveNewOrder() {
     // Ambil ID tugas dari urutan elemen DOM
@@ -557,7 +590,7 @@ class TodoApp {
   /**
    * Menampilkan notifikasi floating (toast-like) di sudut kanan atas.
    * @param {string} msg - Pesan notifikasi.
-   * @param {('success'|'danger'|'warning')} type - Tipe alert Bootstrap.
+   * @param {('success'|'danger'|'warning'|'info')} type - Tipe alert Bootstrap.
    */
   showNotif(msg, type) {
     this.notification.textContent = msg;
@@ -567,10 +600,10 @@ class TodoApp {
     this.notification.style.right = '1rem';
     this.notification.style.zIndex = '2000'; 
     
-    // Hapus notifikasi setelah 2 detik
+    // PERBAIKAN: Durasi notifikasi 5000ms (5 detik)
     setTimeout(() => {
       this.notification.classList.remove('show');
-    }, 2000);
+    }, 5000); 
   }
 }
 
