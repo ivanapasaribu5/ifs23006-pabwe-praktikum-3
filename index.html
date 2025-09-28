@@ -474,6 +474,7 @@
             this.saveEditedTask()
           );
 
+          this.loadTheme(); // 🌟 Muat tema saat aplikasi dimulai
           this.updateCharCounter();
           this.render();
 
@@ -753,12 +754,31 @@
          * Status tema disimpan di atribut data-bs-theme di elemen <html>.
          */
         toggleTheme() {
-          const html = document.documentElement;
-          const isDark = html.getAttribute("data-bs-theme") === "dark";
-          html.setAttribute("data-bs-theme", isDark ? "light" : "dark");
+          const currentTheme =
+            document.documentElement.getAttribute("data-bs-theme");
+          const newTheme = currentTheme === "dark" ? "light" : "dark";
+          localStorage.setItem("todo_theme", newTheme); // 🌟 Simpan tema baru
+          this.applyTheme(newTheme);
+        }
+
+        /**
+         * Memuat tema dari localStorage saat aplikasi pertama kali dijalankan.
+         */
+        loadTheme() {
+          const savedTheme = localStorage.getItem("todo_theme") || "light";
+          this.applyTheme(savedTheme);
+        }
+
+        /**
+         * Menerapkan tema ke dokumen dan memperbarui ikon tombol.
+         * @param {('light'|'dark')} theme - Tema yang akan diterapkan.
+         */
+        applyTheme(theme) {
+          document.documentElement.setAttribute("data-bs-theme", theme);
+          const isDark = theme === "dark";
           this.themeToggle.innerHTML = isDark
-            ? '<i class="bi bi-moon-fill"></i>'
-            : '<i class="bi bi-sun-fill"></i>';
+            ? '<i class="bi bi-sun-fill"></i>'
+            : '<i class="bi bi-moon-fill"></i>';
         }
 
         /**
