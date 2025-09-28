@@ -131,10 +131,6 @@
         transform: translateY(-3px);
         box-shadow: var(--shadow-strong);
       }
-      .task-item.sortable-chosen {
-        opacity: 0.9;
-        background: var(--accent);
-      }
       /* Gaya untuk tugas yang sudah selesai */
       .task-item.completed {
         transition: all 0.3s ease; /* Transisi untuk toggleCompleted UX */
@@ -158,8 +154,13 @@
       }
       /* 🌟 GAYA BARU UNTUK DRAG HANDLE */
       .drag-handle {
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+      }
+      .drag-handle i {
         cursor: grab;
-        color: #9ca3af; /* Warna abu-abu netral */
+        color: #9ca3af;
       }
 
       /* DEADLINE BADGES */
@@ -481,9 +482,6 @@
           // Inisialisasi SortableJS untuk drag and drop urutan tugas
           new Sortable(this.taskList, {
             animation: 150,
-            delay: 300, // Waktu tunda dalam milidetik sebelum drag dimulai
-            delayOnTouchOnly: true, // Hanya aktifkan tunda pada perangkat sentuh
-            handle: ".drag-handle", // 🌟 HANYA elemen ini yang bisa memulai drag
             onEnd: () => this.saveNewOrder(),
           });
         }
@@ -582,14 +580,12 @@
 
           const html = `
       <li class="task-item d-flex justify-content-between align-items-center ${completedClass}" data-id="${task.id}">
-        <div class="d-flex flex-column flex-grow-1">
-          <div class="d-flex align-items-center">
-            <!-- 🌟 IKON DRAG HANDLE BARU -->
-            <i class="bi bi-grip-vertical drag-handle me-2"></i>
-            <input type="checkbox" class="form-check-input me-2" ${checked} data-action="toggle">
+        <div class="d-flex align-items-center flex-grow-1">
+          <input type="checkbox" class="form-check-input me-3" ${checked} data-action="toggle">
+          <div class="d-flex flex-column flex-grow-1 drag-handle">
             <span class="task-title flex-grow-1">${task.text}</span>
+            <span class="badge-deadline ${badge.class}">${badge.text}</span>
           </div>
-          <span class="badge-deadline ${badge.class}">${badge.text}</span>
         </div>
         <div class="task-actions d-flex">
           <button class="btn btn-sm icon-btn" data-action="edit" title="Edit Tugas"><i class="bi bi-pencil"></i></button>
