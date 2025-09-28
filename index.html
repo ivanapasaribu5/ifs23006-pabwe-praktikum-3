@@ -153,11 +153,17 @@
         background: rgba(99, 102, 241, 0.2);
       }
       /* 🌟 GAYA BARU UNTUK DRAG HANDLE */
-      .drag-handle {
+      .drag-handle-wrapper {
+        /* Wrapper baru untuk handle */
+        padding: 8px; /* Memberi area sentuh yang lebih besar */
+        margin-right: 8px; /* Memberi jarak dari checkbox */
         cursor: grab;
-        color: #9ca3af; /* Warna abu-abu netral */
         touch-action: none; /* Mencegah scroll saat menyentuh handle di mobile */
-        padding: 0 0.5rem;
+        display: flex;
+        align-items: center;
+      }
+      .drag-handle-wrapper i {
+        color: #9ca3af; /* Warna ikon */
       }
 
       /* DEADLINE BADGES */
@@ -479,7 +485,9 @@
           // Inisialisasi SortableJS untuk drag and drop urutan tugas
           new Sortable(this.taskList, {
             animation: 150,
-            handle: ".drag-handle", // <-- INI KUNCINYA: Hanya elemen ini yang bisa memulai drag
+            delay: 300, // Waktu tunda dalam milidetik sebelum drag dimulai
+            delayOnTouchOnly: true, // Hanya aktifkan tunda pada perangkat sentuh
+            handle: ".drag-handle-wrapper", // <-- Update selector ke wrapper baru
             onEnd: () => this.saveNewOrder(),
           });
         }
@@ -576,11 +584,14 @@
           const checked = task.completed ? "checked" : "";
           const completedClass = task.completed ? "completed" : "";
 
-          const html = `
+          const html =
+            `
       <li class="task-item d-flex justify-content-between align-items-center ${completedClass}" data-id="${task.id}">
-        <div class="d-flex align-items-center flex-grow-1" style="min-width: 0;">
-          <!-- 🌟 IKON DRAG HANDLE BARU -->
-          <i class="bi bi-grip-vertical drag-handle"></i>
+        <div class="d-flex align-items-center flex-grow-1" style="min-width: 0;">` +
+            // 🌟 WRAPPER BARU UNTUK DRAG HANDLE
+            `<div class="drag-handle-wrapper">
+            <i class="bi bi-grip-vertical"></i>
+          </div>
           <input type="checkbox" class="form-check-input me-2" ${checked} data-action="toggle">
           <div class="d-flex flex-column flex-grow-1" style="min-width: 0;">
             <span class="task-title flex-grow-1">${task.text}</span>
