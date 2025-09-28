@@ -125,8 +125,7 @@
         padding: 14px 16px;
         box-shadow: var(--shadow-soft);
         transition: all 0.25s ease;
-        margin-bottom: 10px;
-        cursor: grab; /* Indikator drag-and-drop */
+        margin-bottom: 12px;
       }
       .task-item:hover {
         transform: translateY(-3px);
@@ -156,6 +155,11 @@
       }
       .task-actions .icon-btn:hover {
         background: rgba(99, 102, 241, 0.2);
+      }
+      /* 🌟 GAYA BARU UNTUK DRAG HANDLE */
+      .drag-handle {
+        cursor: grab;
+        color: #9ca3af; /* Warna abu-abu netral */
       }
 
       /* DEADLINE BADGES */
@@ -476,8 +480,7 @@
           // Inisialisasi SortableJS untuk drag and drop urutan tugas
           new Sortable(this.taskList, {
             animation: 150,
-            delay: 300, // Waktu tunda dalam milidetik sebelum drag dimulai
-            delayOnTouchOnly: true, // Hanya aktifkan tunda pada perangkat sentuh
+            handle: ".drag-handle", // 🌟 HANYA elemen ini yang bisa memulai drag
             onEnd: () => this.saveNewOrder(),
           });
         }
@@ -578,6 +581,8 @@
       <li class="task-item d-flex justify-content-between align-items-center ${completedClass}" data-id="${task.id}">
         <div class="d-flex flex-column flex-grow-1">
           <div class="d-flex align-items-center">
+            <!-- 🌟 IKON DRAG HANDLE BARU -->
+            <i class="bi bi-grip-vertical drag-handle me-2"></i>
             <input type="checkbox" class="form-check-input me-2" ${checked} data-action="toggle">
             <span class="task-title flex-grow-1">${task.text}</span>
           </div>
