@@ -126,6 +126,7 @@
         box-shadow: var(--shadow-soft);
         transition: all 0.25s ease;
         margin-bottom: 12px;
+        cursor: grab; /* Indikator bahwa item bisa diseret */
       }
       .task-item:hover {
         transform: translateY(-3px);
@@ -151,19 +152,6 @@
       }
       .task-actions .icon-btn:hover {
         background: rgba(99, 102, 241, 0.2);
-      }
-      /* 🌟 GAYA BARU UNTUK DRAG HANDLE */
-      .drag-handle-wrapper {
-        /* Wrapper baru untuk handle */
-        padding: 8px; /* Memberi area sentuh yang lebih besar */
-        margin-right: 8px; /* Memberi jarak dari checkbox */
-        cursor: grab;
-        touch-action: none; /* Mencegah scroll saat menyentuh handle di mobile */
-        display: flex;
-        align-items: center;
-      }
-      .drag-handle-wrapper i {
-        color: #9ca3af; /* Warna ikon */
       }
 
       /* DEADLINE BADGES */
@@ -218,18 +206,22 @@
     </style>
   </head>
   <body>
-    <div class="container py-4">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="brand-title">My Todo List</h1>
-        <button
-          id="themeToggle"
-          class="btn btn-outline-secondary rounded-circle"
-          title="Toggle Tema"
-        >
-          <i class="bi bi-moon-fill"></i>
-        </button>
+    <header class="py-3 mb-3">
+      <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+          <h1 class="brand-title mb-0">My Todo List</h1>
+          <button
+            id="themeToggle"
+            class="btn btn-outline-secondary rounded-circle"
+            title="Toggle Tema"
+          >
+            <i class="bi bi-moon-fill"></i>
+          </button>
+        </div>
       </div>
+    </header>
 
+    <main class="container">
       <div class="app-card p-3 mb-4">
         <div class="row g-2">
           <div class="col-md-8">
@@ -325,7 +317,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </main>
 
     <button class="add-fab" id="addBtn" title="Tambah Tugas">
       <i class="bi bi-plus-lg"></i>
@@ -487,8 +479,7 @@
             animation: 150,
             delay: 300, // Waktu tunda dalam milidetik sebelum drag dimulai
             delayOnTouchOnly: true, // Hanya aktifkan tunda pada perangkat sentuh
-            handle: ".drag-handle-wrapper", // <-- Update selector ke wrapper baru
-            onEnd: () => this.saveNewOrder(),
+            onEnd: () => this.saveNewOrder()
           });
         }
 
@@ -587,12 +578,8 @@
           const html =
             `
       <li class="task-item d-flex justify-content-between align-items-center ${completedClass}" data-id="${task.id}">
-        <div class="d-flex align-items-center flex-grow-1" style="min-width: 0;">` +
-            // 🌟 WRAPPER BARU UNTUK DRAG HANDLE
-            `<div class="drag-handle-wrapper">
-            <i class="bi bi-grip-vertical"></i>
-          </div>
-          <input type="checkbox" class="form-check-input me-2" ${checked} data-action="toggle">
+        <div class="d-flex align-items-center flex-grow-1" style="min-width: 0;">
+          <input type="checkbox" class="form-check-input me-3" ${checked} data-action="toggle">
           <div class="d-flex flex-column flex-grow-1" style="min-width: 0;">
             <span class="task-title flex-grow-1">${task.text}</span>
             <span class="badge-deadline ${badge.class}">${badge.text}</span>
