@@ -1,411 +1,578 @@
 <!DOCTYPE html>
 <html lang="id" data-bs-theme="light">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Todo List Pro Modern</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-  <link rel="icon" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/icons/check2-square.svg" type="image/svg+xml">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Todo List Pro Modern</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/icons/check2-square.svg"
+      type="image/svg+xml"
+    />
 
-  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-  <style>
-  /* 🌈 THEME COLORS */
-  :root {
-    --bg-gradient: linear-gradient(160deg, #eef2ff, #fdfdfd);
-    --bg-dark: linear-gradient(160deg, #0f172a, #1e293b);
-    --card-bg: rgba(255,255,255,0.7);
-    --card-dark: rgba(30,41,59,0.7);
-    --shadow-soft: 0 8px 24px rgba(0,0,0,0.08);
-    --shadow-strong: 0 12px 32px rgba(0,0,0,0.15);
-    --radius: 18px;
-    --accent: #6366f1;
-  }
-  [data-bs-theme="dark"] {
-    --card-bg: var(--card-dark);
-    --bg-gradient: var(--bg-dark);
-  }
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <style>
+      /* 🌈 THEME COLORS */
+      :root {
+        --bg-gradient: linear-gradient(160deg, #eef2ff, #fdfdfd);
+        --bg-dark: linear-gradient(160deg, #0f172a, #1e293b);
+        --card-bg: rgba(255, 255, 255, 0.7);
+        --card-dark: rgba(30, 41, 59, 0.7);
+        --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.08);
+        --shadow-strong: 0 12px 32px rgba(0, 0, 0, 0.15);
+        --radius: 18px;
+        --accent: #6366f1;
+      }
+      [data-bs-theme="dark"] {
+        --card-bg: var(--card-dark);
+        --bg-gradient: var(--bg-dark);
+      }
 
-  body {
-    background: var(--bg-gradient);
-    font-family: "Inter", system-ui, sans-serif;
-    padding-bottom: 100px;
-  }
+      body {
+        background: var(--bg-gradient);
+        font-family: "Inter", system-ui, sans-serif;
+        padding-bottom: 100px;
+      }
 
-  /* KARTU APLIKASI (Glassmorphism Effect) */
-  .app-card {
-    background: var(--card-bg);
-    border-radius: var(--radius);
-    backdrop-filter: blur(12px); /* Efek blur/kaca */
-    box-shadow: var(--shadow-soft);
-    border: 1px solid rgba(255,255,255,0.3);
-  }
+      /* KARTU APLIKASI (Glassmorphism Effect) */
+      .app-card {
+        background: var(--card-bg);
+        border-radius: var(--radius);
+        backdrop-filter: blur(12px); /* Efek blur/kaca */
+        box-shadow: var(--shadow-soft);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
 
-  /* HEADER */
-  .brand-title {
-    font-size: 1.4rem;
-    font-weight: 700;
-    /* Efek gradien teks */
-    background: linear-gradient(90deg, #4f46e5, #7c3aed);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
+      /* HEADER */
+      .brand-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        /* Efek gradien teks */
+        background: linear-gradient(90deg, #4f46e5, #7c3aed);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
 
-  /* INPUT */
-  .todo-input, .deadline-input {
-    border-radius: var(--radius);
-    border: 1px solid rgba(0,0,0,0.05);
-    background: rgba(255,255,255,0.6);
-  }
-  [data-bs-theme="dark"] .todo-input,
-  [data-bs-theme="dark"] .deadline-input {
-    background: rgba(255,255,255,0.08);
-    color: #f9fafb;
-  }
+      /* INPUT */
+      .todo-input,
+      .deadline-input {
+        border-radius: var(--radius);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        background: rgba(255, 255, 255, 0.6);
+      }
+      [data-bs-theme="dark"] .todo-input,
+      [data-bs-theme="dark"] .deadline-input {
+        background: rgba(255, 255, 255, 0.08);
+        color: #f9fafb;
+      }
 
-  /* FLOATING ADD BUTTON (FAB) */
-  .add-fab {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: linear-gradient(135deg,#6366f1,#8b5cf6);
-    color: #fff;
-    font-size: 1.3rem;
-    box-shadow: var(--shadow-strong);
-    position: fixed;
-    bottom: 1.5rem;
-    right: 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    overflow: hidden;
-  }
-  /* Efek pulse/riakan pada FAB */
-  .add-fab::after {
-    content: "";
-    position: absolute;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,.2) 10%, transparent 70%);
-    animation: pulse 2s infinite;
-    top: -50%;
-    left: -50%;
-  }
-  @keyframes pulse {
-    0% { transform: scale(0.9); opacity: 0.8; }
-    100% { transform: scale(1.2); opacity: 0; }
-  }
+      /* FLOATING ADD BUTTON (FAB) */
+      .add-fab {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: #fff;
+        font-size: 1.3rem;
+        box-shadow: var(--shadow-strong);
+        position: fixed;
+        bottom: 1.5rem;
+        right: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        overflow: hidden;
+      }
+      /* Efek pulse/riakan pada FAB */
+      .add-fab::after {
+        content: "";
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.2) 10%,
+          transparent 70%
+        );
+        animation: pulse 2s infinite;
+        top: -50%;
+        left: -50%;
+      }
+      @keyframes pulse {
+        0% {
+          transform: scale(0.9);
+          opacity: 0.8;
+        }
+        100% {
+          transform: scale(1.2);
+          opacity: 0;
+        }
+      }
 
-  /* TASK ITEM */
-  .task-item {
-    border-radius: var(--radius);
-    background: var(--card-bg);
-    padding: 14px 16px;
-    box-shadow: var(--shadow-soft);
-    transition: all .25s ease;
-    margin-bottom: 10px;
-    cursor: grab; /* Indikator drag-and-drop */
-  }
-  .task-item:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-strong);
-  }
-  .task-item.sortable-chosen {
-    opacity: 0.9;
-    background: var(--accent);
-  }
-  /* Gaya untuk tugas yang sudah selesai */
-  .task-item.completed {
-    transition: all 0.3s ease; /* Transisi untuk toggleCompleted UX */
-  }
-  .task-item.completed .task-title {
-    text-decoration: line-through;
-    opacity: 0.7;
-  }
-  .task-title {
-    font-weight: 600;
-    font-size: 1rem;
-  }
-  .task-actions .icon-btn {
-    background: rgba(99,102,241,0.1);
-    color: var(--accent);
-    border-radius: 50%;
-    margin-left: 0.25rem;
-  }
-  .task-actions .icon-btn:hover {
-    background: rgba(99,102,241,0.2);
-  }
+      /* TASK ITEM */
+      .task-item {
+        border-radius: var(--radius);
+        background: var(--card-bg);
+        padding: 14px 16px;
+        box-shadow: var(--shadow-soft);
+        transition: all 0.25s ease;
+        margin-bottom: 10px;
+        cursor: grab; /* Indikator drag-and-drop */
+      }
+      .task-item:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-strong);
+      }
+      .task-item.sortable-chosen {
+        opacity: 0.9;
+        background: var(--accent);
+      }
+      /* Gaya untuk tugas yang sudah selesai */
+      .task-item.completed {
+        transition: all 0.3s ease; /* Transisi untuk toggleCompleted UX */
+      }
+      .task-item.completed .task-title {
+        text-decoration: line-through;
+        opacity: 0.7;
+      }
+      .task-title {
+        font-weight: 600;
+        font-size: 1rem;
+      }
+      .task-actions .icon-btn {
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--accent);
+        border-radius: 50%;
+        margin-left: 0.25rem;
+      }
+      .task-actions .icon-btn:hover {
+        background: rgba(99, 102, 241, 0.2);
+      }
 
-  /* DEADLINE BADGES */
-  .badge-deadline {
-    font-size: 0.78rem;
-    padding: 0.3rem 0.6rem;
-    border-radius: 12px;
-    font-weight: 500;
-    margin-top: 4px;
-    align-self: flex-start;
-  }
-  .badge-overdue { background: #fee2e2; color: #b91c1c; } /* Merah - Terlambat */
-  .badge-today { background: #fef3c7; color: #92400e; } /* Kuning - Hari Ini */
-  .badge-upcoming { background: #dcfce7; color: #166534; } /* Hijau - Mendatang */
-  .badge-none { background: #e0e7ff; color: #3730a3; } /* Biru - Tanpa Deadline */
+      /* DEADLINE BADGES */
+      .badge-deadline {
+        font-size: 0.78rem;
+        padding: 0.3rem 0.6rem;
+        border-radius: 12px;
+        font-weight: 500;
+        margin-top: 4px;
+        align-self: flex-start;
+      }
+      .badge-overdue {
+        background: #fee2e2;
+        color: #b91c1c;
+      } /* Merah - Terlambat */
+      .badge-today {
+        background: #fef3c7;
+        color: #92400e;
+      } /* Kuning - Hari Ini */
+      .badge-upcoming {
+        background: #dcfce7;
+        color: #166534;
+      } /* Hijau - Mendatang */
+      .badge-none {
+        background: #e0e7ff;
+        color: #3730a3;
+      } /* Biru - Tanpa Deadline */
 
-  /* PROGRESS */
-  .progress {
-    height: 12px;
-    border-radius: 12px;
-    background: rgba(0,0,0,0.08);
-    overflow: hidden;
-  }
-  .progress-bar { transition: width 0.4s ease; }
+      /* PROGRESS */
+      .progress {
+        height: 12px;
+        border-radius: 12px;
+        background: rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+      }
+      .progress-bar {
+        transition: width 0.4s ease;
+      }
 
-  /* MODAL */
-  .modal-content {
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-strong);
-    border: none;
-    background: var(--card-bg);
-    backdrop-filter: blur(8px);
-  }
-  /* Mengatasi tampilan dark mode pada modal body */
-  [data-bs-theme="dark"] .modal-content {
-      background: var(--card-dark);
-  }
-  </style>
-</head>
-<body>
-<div class="container py-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="brand-title">My Todo List</h1>
-    <button id="themeToggle" class="btn btn-outline-secondary rounded-circle" title="Toggle Tema">
-      <i class="bi bi-moon-fill"></i>
+      /* MODAL */
+      .modal-content {
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-strong);
+        border: none;
+        background: var(--card-bg);
+        backdrop-filter: blur(8px);
+      }
+      /* Mengatasi tampilan dark mode pada modal body */
+      [data-bs-theme="dark"] .modal-content {
+        background: var(--card-dark);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container py-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="brand-title">My Todo List</h1>
+        <button
+          id="themeToggle"
+          class="btn btn-outline-secondary rounded-circle"
+          title="Toggle Tema"
+        >
+          <i class="bi bi-moon-fill"></i>
+        </button>
+      </div>
+
+      <div class="app-card p-3 mb-4">
+        <div class="row g-2">
+          <div class="col-md-8">
+            <input
+              type="text"
+              id="todoInput"
+              class="form-control todo-input"
+              placeholder="Tulis tugas baru..."
+            />
+          </div>
+          <div class="col-md-4">
+            <input
+              type="date"
+              id="deadlineInput"
+              class="form-control deadline-input"
+            />
+          </div>
+        </div>
+        <div id="charCounter" class="text-end text-muted mt-1">
+          0/150 karakter
+        </div>
+      </div>
+
+      <div
+        class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"
+      >
+        <div class="btn-group" role="group">
+          <button
+            class="btn btn-outline-primary active filter-btn"
+            data-filter="all"
+          >
+            Semua
+          </button>
+          <button
+            class="btn btn-outline-primary filter-btn"
+            data-filter="active"
+          >
+            Belum
+          </button>
+          <button
+            class="btn btn-outline-primary filter-btn"
+            data-filter="completed"
+          >
+            Selesai
+          </button>
+        </div>
+        <div class="input-group" style="max-width: 280px">
+          <input
+            type="text"
+            id="searchInput"
+            class="form-control"
+            placeholder="Cari tugas..."
+          />
+          <button
+            class="btn btn-outline-secondary"
+            id="clearSearch"
+            title="Hapus Pencarian"
+          >
+            <i class="bi bi-x-circle"></i>
+          </button>
+        </div>
+      </div>
+
+      <ul id="taskList" class="list-unstyled"></ul>
+      <div id="emptyState" class="text-center text-muted py-4">
+        ✨ Belum ada tugas, yuk tambah sekarang!
+      </div>
+
+      <div class="app-card p-3 mt-4">
+        <div class="row text-center">
+          <div class="col">
+            <h6>Total</h6>
+            <p id="totalTasks" class="fw-bold fs-5">0</p>
+          </div>
+          <div class="col">
+            <h6>Belum</h6>
+            <p id="activeTasks" class="fw-bold fs-5 text-warning">0</p>
+          </div>
+          <div class="col">
+            <h6>Selesai</h6>
+            <p id="completedTasks" class="fw-bold fs-5 text-success">0</p>
+          </div>
+          <div class="col">
+            <h6>Progress</h6>
+            <div class="progress">
+              <div
+                id="progressBar"
+                class="progress-bar bg-success"
+                style="width: 0%"
+              ></div>
+            </div>
+            <small id="completionRate">0%</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="add-fab" id="addBtn" title="Tambah Tugas">
+      <i class="bi bi-plus-lg"></i>
     </button>
-  </div>
 
-  <div class="app-card p-3 mb-4">
-    <div class="row g-2">
-      <div class="col-md-8">
-        <input type="text" id="todoInput" class="form-control todo-input" placeholder="Tulis tugas baru...">
-      </div>
-      <div class="col-md-4">
-        <input type="date" id="deadlineInput" class="form-control deadline-input">
-      </div>
-    </div>
-    <div id="charCounter" class="text-end text-muted mt-1">0/150 karakter</div>
-  </div>
+    <div id="notification" class="alert alert-success fade"></div>
 
-  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-    <div class="btn-group" role="group">
-      <button class="btn btn-outline-primary active filter-btn" data-filter="all">Semua</button>
-      <button class="btn btn-outline-primary filter-btn" data-filter="active">Belum</button>
-      <button class="btn btn-outline-primary filter-btn" data-filter="completed">Selesai</button>
-    </div>
-    <div class="input-group" style="max-width:280px;">
-      <input type="text" id="searchInput" class="form-control" placeholder="Cari tugas...">
-      <button class="btn btn-outline-secondary" id="clearSearch" title="Hapus Pencarian"><i class="bi bi-x-circle"></i></button>
-    </div>
-  </div>
-
-  <ul id="taskList" class="list-unstyled"></ul>
-  <div id="emptyState" class="text-center text-muted py-4">✨ Belum ada tugas, yuk tambah sekarang!</div>
-
-  <div class="app-card p-3 mt-4">
-    <div class="row text-center">
-      <div class="col">
-        <h6>Total</h6><p id="totalTasks" class="fw-bold fs-5">0</p>
-      </div>
-      <div class="col">
-        <h6>Belum</h6><p id="activeTasks" class="fw-bold fs-5 text-warning">0</p>
-      </div>
-      <div class="col">
-        <h6>Selesai</h6><p id="completedTasks" class="fw-bold fs-5 text-success">0</p>
-      </div>
-      <div class="col">
-        <h6>Progress</h6>
-        <div class="progress"><div id="progressBar" class="progress-bar bg-success" style="width:0%"></div></div>
-        <small id="completionRate">0%</small>
-      </div>
-    </div>
-  </div>
-</div>
-
-<button class="add-fab" id="addBtn" title="Tambah Tugas"><i class="bi bi-plus-lg"></i></button>
-
-<div id="notification" class="alert alert-success fade"></div>
-
-<div class="modal fade" id="editTaskModal" tabindex="-1" aria-labelledby="editTaskModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header border-0">
-        <h5 class="modal-title" id="editTaskModalLabel">Edit Tugas</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <input type="hidden" id="editTaskId">
-        <div class="mb-3">
-          <label for="editTodoInput" class="form-label">Tugas</label>
-          <input type="text" id="editTodoInput" class="form-control todo-input" maxlength="150" placeholder="Tulis tugas...">
-        </div>
-        <div class="mb-3">
-          <label for="editDeadlineInput" class="form-label">Deadline</label>
-          <input type="date" id="editDeadlineInput" class="form-control deadline-input">
+    <div
+      class="modal fade"
+      id="editTaskModal"
+      tabindex="-1"
+      aria-labelledby="editTaskModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header border-0">
+            <h5 class="modal-title" id="editTaskModalLabel">Edit Tugas</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="editTaskId" />
+            <div class="mb-3">
+              <label for="editTodoInput" class="form-label">Tugas</label>
+              <input
+                type="text"
+                id="editTodoInput"
+                class="form-control todo-input"
+                maxlength="150"
+                placeholder="Tulis tugas..."
+              />
+            </div>
+            <div class="mb-3">
+              <label for="editDeadlineInput" class="form-label">Deadline</label>
+              <input
+                type="date"
+                id="editDeadlineInput"
+                class="form-control deadline-input"
+              />
+            </div>
+          </div>
+          <div class="modal-footer border-0">
+            <button
+              type="button"
+              class="btn btn-secondary rounded-pill"
+              data-bs-dismiss="modal"
+            >
+              Batal
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary rounded-pill"
+              id="saveEditBtn"
+            >
+              Simpan Perubahan
+            </button>
+          </div>
         </div>
       </div>
-      <div class="modal-footer border-0">
-        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Batal</button>
-        <button type="button" class="btn btn-primary rounded-pill" id="saveEditBtn">Simpan Perubahan</button>
-      </div>
     </div>
-  </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-class TodoApp {
-  /** @typedef {{id: number, text: string, deadline: (string|null), completed: boolean}} Task */
-  
-  /** @type {Task[]} Daftar semua tugas yang tersimpan. */
-  tasks = JSON.parse(localStorage.getItem('todos_modern')) || [];
-  /** @type {string} Filter tampilan saat ini ('all', 'active', 'completed'). */
-  currentFilter = 'all';
-  /** @type {string} Teks pencarian saat ini (huruf kecil). */
-  searchQuery = '';
-  /** @type {number} ID berikutnya yang akan digunakan untuk tugas baru. */
-  nextId = this.tasks.length ? Math.max(...this.tasks.map(t => t.id)) + 1 : 1;
-  
-  constructor() {
-    // 1. DOM Elements (Input & Kontrol)
-    this.todoInput = document.getElementById('todoInput');
-    this.deadlineInput = document.getElementById('deadlineInput');
-    this.addBtn = document.getElementById('addBtn');
-    this.taskList = document.getElementById('taskList');
-    this.charCounter = document.getElementById('charCounter');
-    this.searchInput = document.getElementById('searchInput');
-    this.clearSearchBtn = document.getElementById('clearSearch');
-    this.filterBtns = document.querySelectorAll('.filter-btn');
-    this.emptyState = document.getElementById('emptyState');
-    this.notification = document.getElementById('notification');
-    this.themeToggle = document.getElementById('themeToggle');
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      class TodoApp {
+        /** @typedef {{id: number, text: string, deadline: (string|null), completed: boolean}} Task */
 
-    // 2. Stats Elements
-    this.totalEl = document.getElementById('totalTasks');
-    this.activeEl = document.getElementById('activeTasks');
-    this.completedEl = document.getElementById('completedTasks');
-    this.progressBar = document.getElementById('progressBar');
-    this.completionRate = document.getElementById('completionRate');
+        /** @type {Task[]} Daftar semua tugas yang tersimpan. */
+        tasks = JSON.parse(localStorage.getItem("todos_modern")) || [];
+        /** @type {string} Filter tampilan saat ini ('all', 'active', 'completed'). */
+        currentFilter = "all";
+        /** @type {string} Teks pencarian saat ini (huruf kecil). */
+        searchQuery = "";
+        /** @type {number} ID berikutnya yang akan digunakan untuk tugas baru. */
+        nextId = this.tasks.length
+          ? Math.max(...this.tasks.map((t) => t.id)) + 1
+          : 1;
 
-    // 3. Modal Edit Elements
-    this.editModal = new bootstrap.Modal(document.getElementById('editTaskModal'));
-    this.editTaskId = document.getElementById('editTaskId');
-    this.editTodoInput = document.getElementById('editTodoInput');
-    this.editDeadlineInput = document.getElementById('editDeadlineInput');
-    this.saveEditBtn = document.getElementById('saveEditBtn');
-    
-    this.init();
-  }
+        constructor() {
+          // 1. DOM Elements (Input & Kontrol)
+          this.todoInput = document.getElementById("todoInput");
+          this.deadlineInput = document.getElementById("deadlineInput");
+          this.addBtn = document.getElementById("addBtn");
+          this.taskList = document.getElementById("taskList");
+          this.charCounter = document.getElementById("charCounter");
+          this.searchInput = document.getElementById("searchInput");
+          this.clearSearchBtn = document.getElementById("clearSearch");
+          this.filterBtns = document.querySelectorAll(".filter-btn");
+          this.emptyState = document.getElementById("emptyState");
+          this.notification = document.getElementById("notification");
+          this.themeToggle = document.getElementById("themeToggle");
 
-  /**
-   * Menginisialisasi semua event listener dan SortableJS.
-   */
-  init() {
-    // Event Input Tugas Baru
-    this.addBtn.addEventListener('click', () => this.addTask());
-    this.todoInput.addEventListener('input', () => this.updateCharCounter());
-    this.todoInput.addEventListener('keypress', e => { if (e.key === 'Enter') this.addTask(); });
-    
-    // Event Pencarian
-    this.searchInput.addEventListener('input', e => { this.searchQuery = e.target.value.toLowerCase(); this.render(); });
-    this.clearSearchBtn.addEventListener('click', () => { this.searchInput.value = ''; this.searchQuery = ''; this.render(); });
-    
-    // Event Filter
-    this.filterBtns.forEach(btn => btn.addEventListener('click', e => this.setFilter(e.target.dataset.filter)));
-    
-    // Event Tema & Edit
-    this.themeToggle.addEventListener('click', () => this.toggleTheme());
-    this.saveEditBtn.addEventListener('click', () => this.saveEditedTask());
+          // 2. Stats Elements
+          this.totalEl = document.getElementById("totalTasks");
+          this.activeEl = document.getElementById("activeTasks");
+          this.completedEl = document.getElementById("completedTasks");
+          this.progressBar = document.getElementById("progressBar");
+          this.completionRate = document.getElementById("completionRate");
 
-    this.updateCharCounter();
-    this.render();
-    
-    // Inisialisasi SortableJS untuk drag and drop urutan tugas
-    new Sortable(this.taskList, { animation: 150, onEnd: () => this.saveNewOrder() });
-  }
+          // 3. Modal Edit Elements
+          this.editModal = new bootstrap.Modal(
+            document.getElementById("editTaskModal")
+          );
+          this.editTaskId = document.getElementById("editTaskId");
+          this.editTodoInput = document.getElementById("editTodoInput");
+          this.editDeadlineInput = document.getElementById("editDeadlineInput");
+          this.saveEditBtn = document.getElementById("saveEditBtn");
 
-  /**
-   * Memperbarui penghitung karakter pada input tugas baru.
-   */
-  updateCharCounter() {
-    const len = this.todoInput.value.length, max = 150;
-    this.charCounter.textContent = `${len}/${max} karakter`;
-  }
+          this.init();
+        }
 
-  /**
-   * Menambahkan tugas baru dari input. Melakukan validasi dasar.
-   */
-  addTask() {
-    const text = this.todoInput.value.trim();
-    const deadline = this.deadlineInput.value || null;
+        /**
+         * Menginisialisasi semua event listener dan SortableJS.
+         */
+        init() {
+          // Event Input Tugas Baru
+          this.addBtn.addEventListener("click", () => this.addTask());
+          this.todoInput.addEventListener("input", () =>
+            this.updateCharCounter()
+          );
+          this.todoInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") this.addTask();
+          });
 
-    if (!text) { this.showNotif('Tugas kosong! 🚫', 'danger'); return; }
-    if (text.length > 150) { this.showNotif('Tugas terlalu panjang! ⚠️', 'warning'); return; }
-    if (this.tasks.some(t => t.text.toLowerCase() === text.toLowerCase())) { this.showNotif('Tugas sudah ada! ⛔', 'danger'); return; }
+          // Event Pencarian
+          this.searchInput.addEventListener("input", (e) => {
+            this.searchQuery = e.target.value.toLowerCase();
+            this.render();
+          });
+          this.clearSearchBtn.addEventListener("click", () => {
+            this.searchInput.value = "";
+            this.searchQuery = "";
+            this.render();
+          });
 
-    this.tasks.push({ id: this.nextId++, text, deadline, completed: false });
-    this.save();
-    this.todoInput.value = '';
-    this.deadlineInput.value = '';
-    this.updateCharCounter();
-    this.render();
-    this.showNotif('Tugas ditambahkan ✅', 'success');
-  }
+          // Event Filter
+          this.filterBtns.forEach((btn) =>
+            btn.addEventListener("click", (e) =>
+              this.setFilter(e.target.dataset.filter)
+            )
+          );
 
-  /**
-   * Merender (menampilkan) daftar tugas yang telah difilter dan dicari.
-   * Mengosongkan taskList dan mengisi ulang berdasarkan `filtered` tasks.
-   */
-  render() {
-    this.taskList.innerHTML = '';
-    let filtered = this.tasks.filter(t => {
-      const match = t.text.toLowerCase().includes(this.searchQuery);
-      if (this.currentFilter === 'active') return !t.completed && match;
-      if (this.currentFilter === 'completed') return t.completed && match;
-      return match;
-    });
+          // Event Tema & Edit
+          this.themeToggle.addEventListener("click", () => this.toggleTheme());
+          this.saveEditBtn.addEventListener("click", () =>
+            this.saveEditedTask()
+          );
 
-    if (filtered.length === 0) {
-      this.emptyState.style.display = 'block';
-    } else {
-      this.emptyState.style.display = 'none';
-      filtered.forEach(task => this.renderTask(task));
-    }
-    this.updateStats();
-  }
+          this.updateCharCounter();
+          this.render();
 
-  /**
-   * Helper function untuk menentukan kelas badge deadline.
-   * @param {string|null} deadline - Tanggal deadline (YYYY-MM-DD).
-   * @returns {{class: string, text: string}} Objek kelas CSS dan teks badge.
-   */
-  _getBadgeData(deadline) {
-    if (!deadline) return { class: 'badge-none', text: 'Tanpa deadline' };
-    const today = new Date().toISOString().split('T')[0];
-    if (deadline < today) return { class: 'badge-overdue', text: deadline };
-    if (deadline === today) return { class: 'badge-today', text: deadline };
-    return { class: 'badge-upcoming', text: deadline };
-  }
+          // Inisialisasi SortableJS untuk drag and drop urutan tugas
+          new Sortable(this.taskList, {
+            animation: 150,
+            onEnd: () => this.saveNewOrder(),
+          });
+        }
 
-  /**
-   * Membuat dan merender elemen DOM untuk satu tugas.
-   * Menggunakan template literal untuk kejelasan dan efisiensi.
-   * @param {Task} task - Objek tugas.
-   */
-  renderTask(task) {
-    const badge = this._getBadgeData(task.deadline);
-    const checked = task.completed ? 'checked' : '';
-    const completedClass = task.completed ? 'completed' : '';
+        /**
+         * Memperbarui penghitung karakter pada input tugas baru.
+         */
+        updateCharCounter() {
+          const len = this.todoInput.value.length,
+            max = 150;
+          this.charCounter.textContent = `${len}/${max} karakter`;
+        }
 
-    const html = `
+        /**
+         * Menambahkan tugas baru dari input. Melakukan validasi dasar.
+         */
+        addTask() {
+          const text = this.todoInput.value.trim();
+          const deadline = this.deadlineInput.value || null;
+
+          if (!text) {
+            this.showNotif("Tugas kosong! 🚫", "danger");
+            return;
+          }
+          if (text.length > 150) {
+            this.showNotif("Tugas terlalu panjang! ⚠️", "warning");
+            return;
+          }
+          if (
+            this.tasks.some((t) => t.text.toLowerCase() === text.toLowerCase())
+          ) {
+            this.showNotif("Tugas sudah ada! ⛔", "danger");
+            return;
+          }
+
+          this.tasks.push({
+            id: this.nextId++,
+            text,
+            deadline,
+            completed: false,
+          });
+          this.save();
+          this.todoInput.value = "";
+          this.deadlineInput.value = "";
+          this.updateCharCounter();
+          this.render();
+          this.showNotif("Tugas ditambahkan ✅", "success");
+        }
+
+        /**
+         * Merender (menampilkan) daftar tugas yang telah difilter dan dicari.
+         * Mengosongkan taskList dan mengisi ulang berdasarkan `filtered` tasks.
+         */
+        render() {
+          this.taskList.innerHTML = "";
+          let filtered = this.tasks.filter((t) => {
+            const match = t.text.toLowerCase().includes(this.searchQuery);
+            if (this.currentFilter === "active") return !t.completed && match;
+            if (this.currentFilter === "completed") return t.completed && match;
+            return match;
+          });
+
+          if (filtered.length === 0) {
+            this.emptyState.style.display = "block";
+          } else {
+            this.emptyState.style.display = "none";
+            filtered.forEach((task) => this.renderTask(task));
+          }
+          this.updateStats();
+        }
+
+        /**
+         * Helper function untuk menentukan kelas badge deadline.
+         * @param {string|null} deadline - Tanggal deadline (YYYY-MM-DD).
+         * @returns {{class: string, text: string}} Objek kelas CSS dan teks badge.
+         */
+        _getBadgeData(deadline) {
+          if (!deadline) return { class: "badge-none", text: "Tanpa deadline" };
+          const today = new Date().toISOString().split("T")[0];
+          if (deadline < today)
+            return { class: "badge-overdue", text: deadline };
+          if (deadline === today)
+            return { class: "badge-today", text: deadline };
+          return { class: "badge-upcoming", text: deadline };
+        }
+
+        /**
+         * Membuat dan merender elemen DOM untuk satu tugas.
+         * Menggunakan template literal untuk kejelasan dan efisiensi.
+         * @param {Task} task - Objek tugas.
+         */
+        renderTask(task) {
+          const badge = this._getBadgeData(task.deadline);
+          const checked = task.completed ? "checked" : "";
+          const completedClass = task.completed ? "completed" : "";
+
+          const html = `
       <li class="task-item d-flex justify-content-between align-items-center ${completedClass}" data-id="${task.id}">
         <div class="d-flex flex-column flex-grow-1">
           <div class="d-flex align-items-center">
@@ -421,194 +588,226 @@ class TodoApp {
       </li>
     `;
 
-    this.taskList.insertAdjacentHTML('beforeend', html);
-    
-    // Menambahkan event listener setelah elemen ditambahkan
-    const li = this.taskList.lastElementChild;
-    li.querySelector('[data-action="toggle"]').addEventListener('change', (e) => this.toggleCompleted(task.id, e.target));
-    li.querySelector('[data-action="edit"]').addEventListener('click', () => this.openEditModal(task.id));
-    li.querySelector('[data-action="delete"]').addEventListener('click', () => this.deleteTask(task.id));
-  }
+          this.taskList.insertAdjacentHTML("beforeend", html);
 
-  /**
-   * Membuka modal edit dengan data tugas yang spesifik.
-   * @param {number} id - ID tugas yang akan diedit.
-   */
-  openEditModal(id) {
-    const task = this.tasks.find(t => t.id === id);
-    if (!task) return;
-    this.editTaskId.value = task.id;
-    this.editTodoInput.value = task.text;
-    this.editDeadlineInput.value = task.deadline || '';
-    this.editModal.show();
-  }
+          // Menambahkan event listener setelah elemen ditambahkan
+          const li = this.taskList.lastElementChild;
+          li.querySelector('[data-action="toggle"]').addEventListener(
+            "change",
+            (e) => this.toggleCompleted(task.id, e.target)
+          );
+          li.querySelector('[data-action="edit"]').addEventListener(
+            "click",
+            () => this.openEditModal(task.id)
+          );
+          li.querySelector('[data-action="delete"]').addEventListener(
+            "click",
+            () => this.deleteTask(task.id)
+          );
+        }
 
-  /**
-   * Menyimpan perubahan tugas dari modal edit.
-   */
-  saveEditedTask() {
-    const id = parseInt(this.editTaskId.value);
-    const task = this.tasks.find(t => t.id === id);
-    if (!task) return;
+        /**
+         * Membuka modal edit dengan data tugas yang spesifik.
+         * @param {number} id - ID tugas yang akan diedit.
+         */
+        openEditModal(id) {
+          const task = this.tasks.find((t) => t.id === id);
+          if (!task) return;
+          this.editTaskId.value = task.id;
+          this.editTodoInput.value = task.text;
+          this.editDeadlineInput.value = task.deadline || "";
+          this.editModal.show();
+        }
 
-    const newText = this.editTodoInput.value.trim();
-    const newDeadline = this.editDeadlineInput.value || null;
+        /**
+         * Menyimpan perubahan tugas dari modal edit.
+         */
+        saveEditedTask() {
+          const id = parseInt(this.editTaskId.value);
+          const task = this.tasks.find((t) => t.id === id);
+          if (!task) return;
 
-    if (!newText) {
-      this.showNotif('Tugas edit tidak boleh kosong! 🚫', 'danger');
-      return;
-    }
-    
-    // Validasi duplikasi tugas (kecuali dengan tugas itu sendiri)
-    if (this.tasks.some(t => t.text.toLowerCase() === newText.toLowerCase() && t.id !== id)) {
-      this.showNotif('Tugas dengan nama ini sudah ada! ⛔', 'danger');
-      return;
-    }
+          const newText = this.editTodoInput.value.trim();
+          const newDeadline = this.editDeadlineInput.value || null;
 
-    task.text = newText;
-    task.deadline = newDeadline;
-    this.save();
-    this.render(); 
-    this.editModal.hide();
-    this.showNotif('Tugas berhasil diperbarui 📝', 'success');
-  }
+          if (!newText) {
+            this.showNotif("Tugas edit tidak boleh kosong! 🚫", "danger");
+            return;
+          }
 
-  /**
-   * Mengubah status selesai/belum selesai dari sebuah tugas DAN memperbarui DOM secara langsung.
-   * Ini mencegah flicker dan scroll reset.
-   * @param {number} id - ID tugas yang statusnya akan diubah.
-   * @param {HTMLInputElement} checkboxElement - Elemen checkbox yang memicu perubahan.
-   */
-  toggleCompleted(id, checkboxElement) {
-    const task = this.tasks.find(t => t.id === id);
-    if (task) {
-      task.completed = !task.completed;
-      this.save();
-      
-      const listItem = checkboxElement.closest('.task-item');
-      
-      // Update DOM secara langsung (UX Fix)
-      if (task.completed) {
-        listItem.classList.add('completed');
-      } else {
-        listItem.classList.remove('completed');
-      }
+          // Validasi duplikasi tugas (kecuali dengan tugas itu sendiri)
+          if (
+            this.tasks.some(
+              (t) =>
+                t.text.toLowerCase() === newText.toLowerCase() && t.id !== id
+            )
+          ) {
+            this.showNotif("Tugas dengan nama ini sudah ada! ⛔", "danger");
+            return;
+          }
 
-      this.updateStats(); 
+          task.text = newText;
+          task.deadline = newDeadline;
+          this.save();
+          this.render();
+          this.editModal.hide();
+          this.showNotif("Tugas berhasil diperbarui 📝", "success");
+        }
 
-      // Jika filter aktif selain 'all', hapus elemen secara halus
-      if (this.currentFilter !== 'all' && listItem) {
-          // Tambahkan sedikit delay agar user bisa melihat perubahan status sebelum elemen hilang
-          setTimeout(() => {
-              listItem.style.opacity = '0';
-              listItem.style.transform = 'translateX(-100%)';
+        /**
+         * Mengubah status selesai/belum selesai dari sebuah tugas DAN memperbarui DOM secara langsung.
+         * Ini mencegah flicker dan scroll reset.
+         * @param {number} id - ID tugas yang statusnya akan diubah.
+         * @param {HTMLInputElement} checkboxElement - Elemen checkbox yang memicu perubahan.
+         */
+        toggleCompleted(id, checkboxElement) {
+          const task = this.tasks.find((t) => t.id === id);
+          if (task) {
+            task.completed = !task.completed;
+            this.save();
+
+            const listItem = checkboxElement.closest(".task-item");
+
+            // Update DOM secara langsung (UX Fix)
+            if (task.completed) {
+              listItem.classList.add("completed");
+            } else {
+              listItem.classList.remove("completed");
+            }
+
+            this.updateStats();
+
+            // Jika filter aktif selain 'all', hapus elemen secara halus
+            if (this.currentFilter !== "all" && listItem) {
+              // Tambahkan sedikit delay agar user bisa melihat perubahan status sebelum elemen hilang
               setTimeout(() => {
+                listItem.style.opacity = "0";
+                listItem.style.transform = "translateX(-100%)";
+                setTimeout(() => {
                   listItem.remove();
-                  this.updateStats(); 
-                  this.showNotif('Tugas telah berpindah filter.', 'info');
-              }, 300); 
-          }, 100);
-      } else {
-          this.showNotif(`Tugas ditandai sebagai ${task.completed ? 'Selesai' : 'Belum Selesai'} ✔️`, 'success');
+                  this.updateStats();
+                  this.showNotif("Tugas telah berpindah filter.", "info");
+                }, 300);
+              }, 100);
+            } else {
+              this.showNotif(
+                `Tugas ditandai sebagai ${
+                  task.completed ? "Selesai" : "Belum Selesai"
+                } ✔️`,
+                "success"
+              );
+            }
+          }
+        }
+
+        /**
+         * Menghapus tugas berdasarkan ID.
+         * @param {number} id - ID tugas yang akan dihapus.
+         */
+        deleteTask(id) {
+          this.tasks = this.tasks.filter((t) => t.id !== id);
+          this.save();
+          this.render();
+          this.showNotif("Tugas telah dihapus 🗑️", "warning");
+        }
+
+        /**
+         * Memperbarui statistik total, aktif, selesai, dan progress bar.
+         */
+        updateStats() {
+          const total = this.tasks.length;
+          const completed = this.tasks.filter((t) => t.completed).length;
+          const active = total - completed;
+          const rate = total ? Math.round((completed / total) * 100) : 0;
+
+          this.totalEl.textContent = total;
+          this.activeEl.textContent = active;
+          this.completedEl.textContent = completed;
+          this.progressBar.style.width = rate + "%";
+          this.completionRate.textContent = rate + "%";
+        }
+
+        /**
+         * Mengatur filter tampilan tugas (all, active, completed).
+         * @param {string} f - Tipe filter ('all', 'active', 'completed').
+         */
+        setFilter(f) {
+          this.currentFilter = f;
+          // Update tampilan tombol filter
+          this.filterBtns.forEach((b) => b.classList.remove("active"));
+          document
+            .querySelector(`.filter-btn[data-filter="${f}"]`)
+            .classList.add("active");
+          this.render(); // Re-render diperlukan saat filter diubah
+        }
+
+        /**
+         * Mengubah tema dari light ke dark atau sebaliknya.
+         * Status tema disimpan di atribut data-bs-theme di elemen <html>.
+         */
+        toggleTheme() {
+          const html = document.documentElement;
+          const isDark = html.getAttribute("data-bs-theme") === "dark";
+          html.setAttribute("data-bs-theme", isDark ? "light" : "dark");
+          this.themeToggle.innerHTML = isDark
+            ? '<i class="bi bi-moon-fill"></i>'
+            : '<i class="bi bi-sun-fill"></i>';
+        }
+
+        /**
+         * Menyimpan array tugas ke Local Storage.
+         */
+        save() {
+          localStorage.setItem("todos_modern", JSON.stringify(this.tasks));
+        }
+
+        /**
+         * Menyimpan urutan baru tugas setelah drag and drop (SortableJS).
+         */
+        saveNewOrder() {
+          // Ambil ID tugas dari urutan elemen DOM
+          const ids = [...this.taskList.children].map((li) =>
+            parseInt(li.dataset.id)
+          );
+
+          // Buat array tugas baru berdasarkan urutan ID
+          const newTasks = ids
+            .map((id) => this.tasks.find((t) => t.id === id))
+            .filter((t) => t !== undefined);
+
+          this.tasks = newTasks;
+          this.save();
+        }
+
+        /**
+         * Menampilkan notifikasi floating (toast-like) di sudut kanan atas.
+         * @param {string} msg - Pesan notifikasi.
+         * @param {('success'|'danger'|'warning'|'info')} type - Tipe alert Bootstrap.
+         */
+        showNotif(msg, type) {
+          // Reset kelas-kelas alert sebelumnya dan tambahkan yang baru
+          this.notification.className = "alert shadow fade"; // Pastikan 'fade' selalu ada
+          this.notification.classList.add(`alert-${type}`);
+          this.notification.textContent = msg;
+          this.notification.style.position = "fixed";
+          this.notification.style.top = "1rem";
+          this.notification.style.right = "1rem";
+          this.notification.style.zIndex = "2000";
+
+          // Hapus notifikasi setelah 5 detik
+          setTimeout(() => this.hideNotif(), 5000);
+
+          // Tambahkan kelas 'show' setelah jeda singkat agar transisi fade-in berjalan
+          setTimeout(() => this.notification.classList.add("show"), 50);
+        }
+
+        hideNotif() {
+          this.notification.classList.remove("show");
+        }
       }
-    }
-  }
 
-  /**
-   * Menghapus tugas berdasarkan ID.
-   * @param {number} id - ID tugas yang akan dihapus.
-   */
-  deleteTask(id) {
-    this.tasks = this.tasks.filter(t => t.id !== id);
-    this.save();
-    this.render();
-    this.showNotif('Tugas telah dihapus 🗑️', 'warning');
-  }
-
-  /**
-   * Memperbarui statistik total, aktif, selesai, dan progress bar.
-   */
-  updateStats() {
-    const total = this.tasks.length;
-    const completed = this.tasks.filter(t => t.completed).length;
-    const active = total - completed;
-    const rate = total ? Math.round((completed / total) * 100) : 0;
-
-    this.totalEl.textContent = total;
-    this.activeEl.textContent = active;
-    this.completedEl.textContent = completed;
-    this.progressBar.style.width = rate + '%';
-    this.completionRate.textContent = rate + '%';
-  }
-
-  /**
-   * Mengatur filter tampilan tugas (all, active, completed).
-   * @param {string} f - Tipe filter ('all', 'active', 'completed').
-   */
-  setFilter(f) {
-    this.currentFilter = f;
-    // Update tampilan tombol filter
-    this.filterBtns.forEach(b => b.classList.remove('active'));
-    document.querySelector(`.filter-btn[data-filter="${f}"]`).classList.add('active');
-    this.render(); // Re-render diperlukan saat filter diubah
-  }
-
-  /**
-   * Mengubah tema dari light ke dark atau sebaliknya.
-   * Status tema disimpan di atribut data-bs-theme di elemen <html>.
-   */
-  toggleTheme() {
-    const html = document.documentElement;
-    const isDark = html.getAttribute('data-bs-theme') === 'dark';
-    html.setAttribute('data-bs-theme', isDark ? 'light' : 'dark');
-    this.themeToggle.innerHTML = isDark ? '<i class="bi bi-moon-fill"></i>' : '<i class="bi bi-sun-fill"></i>';
-  }
-
-  /**
-   * Menyimpan array tugas ke Local Storage.
-   */
-  save() {
-    localStorage.setItem('todos_modern', JSON.stringify(this.tasks));
-  }
-
-  /**
-   * Menyimpan urutan baru tugas setelah drag and drop (SortableJS).
-   */
-  saveNewOrder() {
-    // Ambil ID tugas dari urutan elemen DOM
-    const ids = [...this.taskList.children].map(li => parseInt(li.dataset.id));
-    
-    // Buat array tugas baru berdasarkan urutan ID
-    const newTasks = ids
-        .map(id => this.tasks.find(t => t.id === id))
-        .filter(t => t !== undefined);
-        
-    this.tasks = newTasks;
-    this.save();
-  }
-
-  /**
-   * Menampilkan notifikasi floating (toast-like) di sudut kanan atas.
-   * @param {string} msg - Pesan notifikasi.
-   * @param {('success'|'danger'|'warning'|'info')} type - Tipe alert Bootstrap.
-   */
-  showNotif(msg, type) {
-    this.notification.textContent = msg;
-    this.notification.className = `alert alert-${type} show shadow`;
-    this.notification.style.position = 'fixed';
-    this.notification.style.top = '1rem';
-    this.notification.style.right = '1rem';
-    this.notification.style.zIndex = '2000'; 
-    
-    // PERBAIKAN: Durasi notifikasi 5000ms (5 detik)
-    setTimeout(() => {
-      this.notification.classList.remove('show');
-    }, 5000); 
-  }
-}
-
-// Inisialisasi Aplikasi
-new TodoApp();
-</script>
-</body>
+      // Inisialisasi Aplikasi
+      new TodoApp();
+    </script>
+  </body>
 </html>
