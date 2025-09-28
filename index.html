@@ -154,13 +154,10 @@
       }
       /* 🌟 GAYA BARU UNTUK DRAG HANDLE */
       .drag-handle {
-        display: flex;
-        align-items: center;
-        flex-grow: 1;
-      }
-      .drag-handle i {
         cursor: grab;
-        color: #9ca3af;
+        color: #9ca3af; /* Warna abu-abu netral */
+        touch-action: none; /* Mencegah scroll saat menyentuh handle di mobile */
+        padding: 0 0.5rem;
       }
 
       /* DEADLINE BADGES */
@@ -482,6 +479,7 @@
           // Inisialisasi SortableJS untuk drag and drop urutan tugas
           new Sortable(this.taskList, {
             animation: 150,
+            handle: ".drag-handle", // <-- INI KUNCINYA: Hanya elemen ini yang bisa memulai drag
             onEnd: () => this.saveNewOrder(),
           });
         }
@@ -580,9 +578,11 @@
 
           const html = `
       <li class="task-item d-flex justify-content-between align-items-center ${completedClass}" data-id="${task.id}">
-        <div class="d-flex align-items-center flex-grow-1">
-          <input type="checkbox" class="form-check-input me-3" ${checked} data-action="toggle">
-          <div class="d-flex flex-column flex-grow-1 drag-handle">
+        <div class="d-flex align-items-center flex-grow-1" style="min-width: 0;">
+          <!-- 🌟 IKON DRAG HANDLE BARU -->
+          <i class="bi bi-grip-vertical drag-handle"></i>
+          <input type="checkbox" class="form-check-input me-2" ${checked} data-action="toggle">
+          <div class="d-flex flex-column flex-grow-1" style="min-width: 0;">
             <span class="task-title flex-grow-1">${task.text}</span>
             <span class="badge-deadline ${badge.class}">${badge.text}</span>
           </div>
