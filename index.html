@@ -1,228 +1,354 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="light">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <title>Todo List</title>
+<html lang="id" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Todo List Pro Modern</title>
+  <!-- Bootstrap CSS & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- SortableJS -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <style>
+  /* 🌈 THEME COLORS */
+  :root {
+    --bg-gradient: linear-gradient(160deg, #eef2ff, #fdfdfd);
+    --bg-dark: linear-gradient(160deg, #0f172a, #1e293b);
+    --card-bg: rgba(255,255,255,0.7);
+    --card-dark: rgba(30,41,59,0.7);
+    --shadow-soft: 0 8px 24px rgba(0,0,0,0.08);
+    --shadow-strong: 0 12px 32px rgba(0,0,0,0.15);
+    --radius: 18px;
+    --accent: #6366f1;
+  }
+  [data-bs-theme="dark"] {
+    --card-bg: var(--card-dark);
+    --bg-gradient: var(--bg-dark);
+  }
 
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      :root,
-      [data-bs-theme="light"] {
-        --body-bg: linear-gradient(to bottom, #e3f2fd, #ffffff);
-        --card-bg: rgba(255, 255, 255, 0.75);
-        --card-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
-        --text-color: #212529;
-        --muted-text-color: #6c757d;
-        --todo-item-bg: #ffffff;
-        --todo-item-border: #dee2e6;
-        --todo-item-hover-bg: #f8f9fa;
-        --todo-completed-bg: #d1e7dd;
-        --todo-completed-color: #6c757d;
-        --form-control-focus-shadow: rgba(13, 110, 253, 0.25);
-      }
+  body {
+    background: var(--bg-gradient);
+    font-family: "Inter", system-ui, sans-serif;
+    padding-bottom: 100px;
+  }
 
-      [data-bs-theme="dark"] {
-        --body-bg: linear-gradient(to bottom, #0d1b2a, #1b263b);
-        --card-bg: rgba(27, 38, 59, 0.75);
-        --card-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.3);
-        --text-color: #e0e1dd;
-        --muted-text-color: #adb5bd;
-        --todo-item-bg: #415a77;
-        --todo-item-border: #778da9;
-        --todo-item-hover-bg: #5a7492;
-        --todo-completed-bg: #2b4f3e;
-        --todo-completed-color: #a3cfbb;
-        --form-control-focus-shadow: rgba(110, 168, 254, 0.25);
-      }
+  .app-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-soft);
+    border: 1px solid rgba(255,255,255,0.3);
+  }
 
-      body {
-        font-family: "Poppins", sans-serif;
-        background: var(--body-bg);
-        color: var(--text-color);
-        transition: background 0.4s ease, color 0.4s ease;
-      }
-      .card {
-        backdrop-filter: blur(10px);
-        background-color: var(--card-bg);
-        transition: all 0.3s ease;
-        border: none;
-      }
-      .card:hover {
-        box-shadow: var(--card-shadow) !important;
-      }
-      .list-group-item.dragging {
-        opacity: 0.5;
-        background-color: #e9ecef;
-      }
-      .list-group-item {
-        background-color: var(--todo-item-bg);
-        transition: background-color 0.2s ease-in-out, opacity 0.4s ease,
-          transform 0.4s ease;
-        border-radius: 0.5rem !important; /* Rounded corners for items */
-        margin-bottom: 8px; /* Add space between items */
-        border: 1px solid var(--todo-item-border);
-      }
-      .list-group-item:hover {
-        background-color: var(--todo-item-hover-bg);
-      }
-      .list-group-item:last-child {
-        margin-bottom: 0;
-      }
-      .form-control:focus {
-        box-shadow: 0 0 0 0.25rem var(--form-control-focus-shadow);
-      }
-      .todo-completed {
-        background-color: var(--todo-completed-bg);
-        text-decoration: line-through;
-        color: var(--todo-completed-color);
-      }
-      .todo-completed .form-check-label {
-        text-decoration: line-through;
-      }
-      .nav-pills .btn-primary.active {
-        box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
-      }
-      /* Animations */
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(-10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
+  /* HEADER */
+  .brand-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, #4f46e5, #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 
-      .fade-in {
-        animation: fadeIn 0.4s ease-out forwards;
-      }
+  /* INPUT */
+  .todo-input, .deadline-input {
+    border-radius: var(--radius);
+    border: 1px solid rgba(0,0,0,0.05);
+    background: rgba(255,255,255,0.6);
+  }
+  [data-bs-theme="dark"] .todo-input,
+  [data-bs-theme="dark"] .deadline-input {
+    background: rgba(255,255,255,0.08);
+    color: #f9fafb;
+  }
 
-      .fade-out {
-        opacity: 0;
-        transform: scale(0.9);
-        transition: opacity 0.4s ease, transform 0.4s ease;
-      }
-      .theme-toggle {
-        cursor: pointer;
-        font-size: 1.25rem;
-        color: white;
-      }
-      .form-check-input {
-        cursor: pointer;
-      }
-    </style>
-  </head>
-  <body class="d-flex flex-column min-vh-100">
-    <header>
-      <nav
-        class="navbar navbar-expand navbar-dark bg-primary shadow-sm border-bottom"
-      >
-        <div class="container d-flex justify-content-between">
-          <a class="navbar-brand" href="#">
-            <i class="bi bi-card-checklist"></i>
-            <b>Aplikasi Todo List</b>
-          </a>
-          <span id="theme-toggle" class="theme-toggle">
-            <i class="bi bi-moon-stars-fill"></i>
-            <!-- Icon will be changed by JS -->
-          </span>
-        </div>
-      </nav>
-    </header>
+  /* FLOATING ADD BUTTON */
+  .add-fab {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,#6366f1,#8b5cf6);
+    color: #fff;
+    font-size: 1.3rem;
+    box-shadow: var(--shadow-strong);
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    overflow: hidden;
+  }
+  .add-fab::after {
+    content: "";
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,.2) 10%, transparent 70%);
+    animation: pulse 2s infinite;
+    top: -50%;
+    left: -50%;
+  }
+  @keyframes pulse {
+    0% { transform: scale(0.9); opacity: 0.8; }
+    100% { transform: scale(1.2); opacity: 0; }
+  }
 
-    <main class="container my-5">
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <h1 class="h4 card-title">Apa rencana kamu selanjutnya?</h1>
-          <form id="formData">
-            <div class="mb-3">
-              <div class="input-group">
-                <input
-                  type="text"
-                  class="form-control"
-                  id="todo-input"
-                  name="todo"
-                  placeholder="Contoh: Belajar JavaScript"
-                />
-                <button type="submit" class="btn btn-primary">
-                  <i class="bi bi-plus-lg"></i> Tambah
-                </button>
-              </div>
-            </div>
-          </form>
+  /* TASK ITEM */
+  .task-item {
+    border-radius: var(--radius);
+    background: var(--card-bg);
+    padding: 14px 16px;
+    box-shadow: var(--shadow-soft);
+    transition: all .25s ease;
+    margin-bottom: 10px;
+  }
+  .task-item:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-strong);
+  }
+  .task-title {
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  .task-actions .icon-btn {
+    background: rgba(99,102,241,0.1);
+    color: var(--accent);
+    border-radius: 50%;
+    margin-left: 0.25rem;
+  }
+  .task-actions .icon-btn:hover {
+    background: rgba(99,102,241,0.2);
+  }
 
-          <hr />
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="flex-grow-1 me-3">
-              <input
-                type="text"
-                id="search-input"
-                class="form-control"
-                placeholder="Cari todo..."
-              />
-            </div>
-            <div
-              class="btn-group nav nav-pills"
-              role="group"
-              id="filter-buttons"
-            >
-              <button
-                type="button"
-                class="btn btn-primary active"
-                data-filter="all"
-              >
-                Semua
-              </button>
-              <button
-                type="button"
-                class="btn btn-warning"
-                data-filter="uncompleted"
-              >
-                Belum Selesai
-              </button>
-              <button
-                type="button"
-                class="btn btn-success"
-                data-filter="completed"
-              >
-                Selesai
-              </button>
-            </div>
-          </div>
+  /* DEADLINE BADGES */
+  .badge-deadline {
+    font-size: 0.78rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    font-weight: 500;
+  }
+  .badge-overdue { background: #fee2e2; color: #b91c1c; }
+  .badge-today { background: #fef3c7; color: #92400e; }
+  .badge-upcoming { background: #dcfce7; color: #166534; }
+  .badge-none { background: #e0e7ff; color: #3730a3; }
 
-          <ul class="list-group" id="todoList">
-            <!-- Daftar todo akan dirender di sini -->
-          </ul>
-        </div>
+  /* PROGRESS */
+  .progress {
+    height: 12px;
+    border-radius: 12px;
+    background: rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+  .progress-bar { transition: width 0.4s ease; }
+
+  /* MODAL EDIT */
+  .modal-content {
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-strong);
+    border: none;
+    background: var(--card-bg);
+  }
+  </style>
+</head>
+<body>
+<div class="container py-4">
+  <!-- HEADER -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="brand-title">My Todo List</h1>
+    <button id="themeToggle" class="btn btn-outline-secondary rounded-circle">
+      <i class="bi bi-moon-fill"></i>
+    </button>
+  </div>
+
+  <!-- INPUT CARD -->
+  <div class="app-card p-3 mb-4">
+    <div class="row g-2">
+      <div class="col-md-8">
+        <input type="text" id="todoInput" class="form-control todo-input" placeholder="Tulis tugas baru... (max 150)">
       </div>
-    </main>
-
-    <footer class="mt-auto py-3 bg-transparent">
-      <div class="container text-center">
-        <span style="color: var(--muted-text-color)"
-          >Copyright &copy; 2024 &middot; Dibuat dengan ❤️</span
-        >
+      <div class="col-md-4">
+        <input type="date" id="deadlineInput" class="form-control deadline-input">
       </div>
-    </footer>
+    </div>
+    <div id="charCounter" class="text-end text-muted mt-1">0/150 karakter</div>
+  </div>
 
-    <script src="asset/js/script.js"></script>
-  </body>
+  <!-- FILTER & SEARCH -->
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div class="btn-group" role="group">
+      <button class="btn btn-outline-primary active filter-btn" data-filter="all">Semua</button>
+      <button class="btn btn-outline-primary filter-btn" data-filter="active">Belum</button>
+      <button class="btn btn-outline-primary filter-btn" data-filter="completed">Selesai</button>
+    </div>
+    <div class="input-group" style="max-width:280px;">
+      <input type="text" id="searchInput" class="form-control" placeholder="Cari tugas...">
+      <button class="btn btn-outline-secondary" id="clearSearch"><i class="bi bi-x-circle"></i></button>
+    </div>
+  </div>
+
+  <!-- TASK LIST -->
+  <ul id="taskList" class="list-unstyled"></ul>
+  <div id="emptyState" class="text-center text-muted py-4">✨ Belum ada tugas, yuk tambah sekarang!</div>
+
+  <!-- STATS -->
+  <div class="app-card p-3 mt-4">
+    <div class="row text-center">
+      <div class="col">
+        <h6>Total</h6><p id="totalTasks" class="fw-bold fs-5">0</p>
+      </div>
+      <div class="col">
+        <h6>Belum</h6><p id="activeTasks" class="fw-bold fs-5 text-warning">0</p>
+      </div>
+      <div class="col">
+        <h6>Selesai</h6><p id="completedTasks" class="fw-bold fs-5 text-success">0</p>
+      </div>
+      <div class="col">
+        <h6>Progress</h6>
+        <div class="progress"><div id="progressBar" class="progress-bar bg-success" style="width:0%"></div></div>
+        <small id="completionRate">0%</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FLOATING ADD BUTTON -->
+<button class="add-fab" id="addBtn"><i class="bi bi-plus-lg"></i></button>
+
+<!-- NOTIFICATION -->
+<div id="notification" class="alert alert-success fade"></div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+class TodoApp {
+  constructor() {
+    this.todoInput=document.getElementById('todoInput');
+    this.deadlineInput=document.getElementById('deadlineInput');
+    this.addBtn=document.getElementById('addBtn');
+    this.taskList=document.getElementById('taskList');
+    this.charCounter=document.getElementById('charCounter');
+    this.searchInput=document.getElementById('searchInput');
+    this.clearSearchBtn=document.getElementById('clearSearch');
+    this.filterBtns=document.querySelectorAll('.filter-btn');
+    this.emptyState=document.getElementById('emptyState');
+    this.notification=document.getElementById('notification');
+    this.totalEl=document.getElementById('totalTasks');
+    this.activeEl=document.getElementById('activeTasks');
+    this.completedEl=document.getElementById('completedTasks');
+    this.progressBar=document.getElementById('progressBar');
+    this.completionRate=document.getElementById('completionRate');
+    this.themeToggle=document.getElementById('themeToggle');
+
+    this.tasks=JSON.parse(localStorage.getItem('todos_modern'))||[];
+    this.currentFilter='all';
+    this.searchQuery='';
+    this.nextId=this.tasks.length?Math.max(...this.tasks.map(t=>t.id))+1:1;
+    this.init();
+  }
+  init(){
+    this.addBtn.addEventListener('click',()=>this.addTask());
+    this.todoInput.addEventListener('input',()=>this.updateCharCounter());
+    this.todoInput.addEventListener('keypress',e=>{if(e.key==='Enter')this.addTask();});
+    this.searchInput.addEventListener('input',e=>{this.searchQuery=e.target.value.toLowerCase();this.render();});
+    this.clearSearchBtn.addEventListener('click',()=>{this.searchInput.value='';this.searchQuery='';this.render();});
+    this.filterBtns.forEach(btn=>btn.addEventListener('click',e=>this.setFilter(e.target.dataset.filter)));
+    this.themeToggle.addEventListener('click',()=>this.toggleTheme());
+    this.updateCharCounter();this.render();
+    new Sortable(this.taskList,{ animation:150, onEnd:()=>this.saveNewOrder() });
+  }
+  updateCharCounter(){
+    const len=this.todoInput.value.length,max=150;
+    this.charCounter.textContent=`${len}/${max} karakter`;
+  }
+  addTask(){
+    const text=this.todoInput.value.trim();
+    const deadline=this.deadlineInput.value;
+    if(!text){this.showNotif('Tugas kosong!','danger');return;}
+    if(text.length>150){this.showNotif('Tugas terlalu panjang!','warning');return;}
+    if(this.tasks.some(t=>t.text.toLowerCase()===text.toLowerCase())){this.showNotif('Tugas sudah ada!','danger');return;}
+    this.tasks.push({id:this.nextId++,text,deadline,completed:false});
+    this.save();
+    this.todoInput.value='';this.deadlineInput.value='';
+    this.updateCharCounter();this.render();
+    this.showNotif('Tugas ditambahkan ✅','success');
+  }
+  render(){
+    this.taskList.innerHTML='';
+    let filtered=this.tasks.filter(t=>{
+      const match=t.text.toLowerCase().includes(this.searchQuery);
+      if(this.currentFilter==='active')return!t.completed&&match;
+      if(this.currentFilter==='completed')return t.completed&&match;
+      return match;
+    });
+    if(filtered.length===0){this.emptyState.style.display='block';}
+    else{this.emptyState.style.display='none';filtered.forEach(task=>this.renderTask(task));}
+    this.updateStats();
+  }
+  renderTask(task){
+    const li=document.createElement('li');
+    li.className='task-item d-flex justify-content-between align-items-center';
+    li.dataset.id=task.id;if(task.completed)li.classList.add('completed');
+    const left=document.createElement('div');
+    left.className='d-flex flex-column flex-grow-1';
+    const top=document.createElement('div');
+    top.className='d-flex align-items-center';
+    const checkbox=document.createElement('input');
+    checkbox.type='checkbox';checkbox.checked=task.completed;checkbox.className='form-check-input me-2';
+    checkbox.addEventListener('change',()=>{task.completed=!task.completed;this.save();this.render();});
+    const span=document.createElement('span');
+    span.className='task-title flex-grow-1';span.textContent=task.text;
+    top.appendChild(checkbox);top.appendChild(span);
+    const badge=document.createElement('span');
+    if(task.deadline){
+      const today=new Date().toISOString().split('T')[0];
+      if(task.deadline<today) badge.className='badge-deadline badge-overdue';
+      else if(task.deadline===today) badge.className='badge-deadline badge-today';
+      else badge.className='badge-deadline badge-upcoming';
+      badge.textContent=task.deadline;
+    } else { badge.className='badge-deadline badge-none';badge.textContent='Tanpa deadline'; }
+    left.appendChild(top);left.appendChild(badge);
+    const actions=document.createElement('div');
+    actions.className='task-actions d-flex';
+    const editBtn=document.createElement('button');
+    editBtn.className='btn btn-sm icon-btn';editBtn.innerHTML='<i class="bi bi-pencil"></i>';
+    editBtn.addEventListener('click',()=>{const newText=prompt('Edit tugas:',task.text);
+      if(newText){task.text=newText;const newDeadline=prompt('Edit deadline (YYYY-MM-DD):',task.deadline||'');
+      if(newDeadline)task.deadline=newDeadline;this.save();this.render();}});
+    const delBtn=document.createElement('button');
+    delBtn.className='btn btn-sm icon-btn';delBtn.innerHTML='<i class="bi bi-trash"></i>';
+    delBtn.addEventListener('click',()=>{this.tasks=this.tasks.filter(t=>t.id!==task.id);this.save();this.render();});
+    actions.appendChild(editBtn);actions.appendChild(delBtn);
+    li.appendChild(left);li.appendChild(actions);this.taskList.appendChild(li);
+  }
+  updateStats(){
+    const total=this.tasks.length,completed=this.tasks.filter(t=>t.completed).length,active=total-completed;
+    const rate=total?Math.round((completed/total)*100):0;
+    this.totalEl.textContent=total;this.activeEl.textContent=active;this.completedEl.textContent=completed;
+    this.progressBar.style.width=rate+'%';this.completionRate.textContent=rate+'%';
+  }
+  setFilter(f){
+    this.currentFilter=f;this.filterBtns.forEach(b=>b.classList.remove('active'));
+    document.querySelector(`.filter-btn[data-filter="${f}"]`).classList.add('active');this.render();
+  }
+  toggleTheme(){
+    const html=document.documentElement;
+    if(html.getAttribute('data-bs-theme')==='light'){html.setAttribute('data-bs-theme','dark');this.themeToggle.innerHTML='<i class="bi bi-sun-fill"></i>';}
+    else{html.setAttribute('data-bs-theme','light');this.themeToggle.innerHTML='<i class="bi bi-moon-fill"></i>';}
+  }
+  save(){localStorage.setItem('todos_modern',JSON.stringify(this.tasks));}
+  saveNewOrder(){
+    const ids=[...this.taskList.children].map(li=>parseInt(li.dataset.id));
+    this.tasks.sort((a,b)=>ids.indexOf(a.id)-ids.indexOf(b.id));this.save();
+  }
+  showNotif(msg,type){
+    this.notification.textContent=msg;
+    this.notification.className=`alert alert-${type} show shadow`;
+    this.notification.style.position='fixed';this.notification.style.top='1rem';this.notification.style.right='1rem';
+    setTimeout(()=>{this.notification.classList.remove('show');},2000);
+  }
+}
+new TodoApp();
+</script>
+</body>
 </html>
